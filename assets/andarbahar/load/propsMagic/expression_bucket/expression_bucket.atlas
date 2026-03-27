@@ -1,0 +1,48 @@
+
+expression_bucket.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+expression_bucket
+  rotate: true
+  xy: 93, 47
+  size: 68, 57
+  orig: 70, 63
+  offset: 1, 1
+  index: -1
+expression_bucket2
+  rotate: false
+  xy: 104, 153
+  size: 58, 20
+  orig: 58, 20
+  offset: 0, 0
+  index: -1
+expression_bucket3
+  rotate: true
+  xy: 104, 175
+  size: 64, 23
+  orig: 66, 25
+  offset: 1, 1
+  index: -1
+expression_water
+  rotate: false
+  xy: 93, 2
+  size: 74, 43
+  orig: 76, 45
+  offset: 1, 1
+  index: -1
+expression_water2
+  rotate: false
+  xy: 2, 4
+  size: 89, 111
+  orig: 89, 111
+  offset: 0, 0
+  index: -1
+expression_water3
+  rotate: false
+  xy: 2, 117
+  size: 100, 122
+  orig: 100, 122
+  offset: 0, 0
+  index: -1

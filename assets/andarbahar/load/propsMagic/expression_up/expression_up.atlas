@@ -1,0 +1,48 @@
+
+expression_up.png
+size: 128,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+expression_finger
+  rotate: true
+  xy: 2, 4
+  size: 47, 61
+  orig: 47, 61
+  offset: 0, 0
+  index: -1
+expression_light1
+  rotate: false
+  xy: 65, 21
+  size: 29, 30
+  orig: 37, 40
+  offset: 4, 5
+  index: -1
+expression_light2
+  rotate: false
+  xy: 65, 21
+  size: 29, 30
+  orig: 37, 40
+  offset: 4, 5
+  index: -1
+expression_light3
+  rotate: false
+  xy: 96, 25
+  size: 26, 26
+  orig: 34, 34
+  offset: 4, 4
+  index: -1
+expression_light4
+  rotate: false
+  xy: 96, 25
+  size: 26, 26
+  orig: 34, 34
+  offset: 4, 4
+  index: -1
+expression_palm
+  rotate: false
+  xy: 2, 53
+  size: 102, 69
+  orig: 104, 71
+  offset: 1, 1
+  index: -1

@@ -1,0 +1,55 @@
+
+expression_egg.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+expression_egg1
+  rotate: true
+  xy: 2, 136
+  size: 61, 79
+  orig: 63, 81
+  offset: 1, 1
+  index: -1
+expression_egg2a
+  rotate: true
+  xy: 120, 198
+  size: 54, 61
+  orig: 56, 63
+  offset: 1, 1
+  index: -1
+expression_egg2a2
+  rotate: true
+  xy: 183, 198
+  size: 54, 61
+  orig: 56, 63
+  offset: 1, 1
+  index: -1
+expression_egg2b
+  rotate: true
+  xy: 83, 134
+  size: 62, 64
+  orig: 65, 66
+  offset: 1, 1
+  index: -1
+expression_egg2b2
+  rotate: true
+  xy: 54, 199
+  size: 53, 64
+  orig: 65, 66
+  offset: 10, 1
+  index: -1
+expression_egg2c
+  rotate: false
+  xy: 2, 202
+  size: 50, 50
+  orig: 54, 54
+  offset: 2, 4
+  index: -1
+expression_egg3
+  rotate: true
+  xy: 149, 75
+  size: 121, 103
+  orig: 122, 105
+  offset: 0, 2
+  index: -1

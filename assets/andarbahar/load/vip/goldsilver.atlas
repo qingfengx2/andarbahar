@@ -1,0 +1,104 @@
+
+goldsilver.png
+size: 302,371
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+baoshi
+  rotate: false
+  xy: 106, 9
+  size: 23, 23
+  orig: 23, 23
+  offset: 0, 0
+  index: -1
+baoshi2
+  rotate: false
+  xy: 131, 2
+  size: 23, 23
+  orig: 23, 23
+  offset: 0, 0
+  index: -1
+chibang
+  rotate: false
+  xy: 256, 21
+  size: 33, 72
+  orig: 33, 72
+  offset: 0, 0
+  index: -1
+chibang2
+  rotate: true
+  xy: 77, 34
+  size: 33, 72
+  orig: 33, 72
+  offset: 0, 0
+  index: -1
+chibangyin
+  rotate: true
+  xy: 2, 35
+  size: 32, 73
+  orig: 32, 73
+  offset: 0, 0
+  index: -1
+chibangyin2
+  rotate: true
+  xy: 2, 2
+  size: 31, 72
+  orig: 31, 72
+  offset: 0, 0
+  index: -1
+di
+  rotate: false
+  xy: 161, 58
+  size: 93, 35
+  orig: 93, 35
+  offset: 0, 0
+  index: -1
+di2
+  rotate: false
+  xy: 151, 27
+  size: 54, 29
+  orig: 54, 29
+  offset: 0, 0
+  index: -1
+guang
+  rotate: false
+  xy: 207, 25
+  size: 31, 31
+  orig: 31, 31
+  offset: 0, 0
+  index: -1
+guang2
+  rotate: false
+  xy: 76, 5
+  size: 28, 27
+  orig: 31, 31
+  offset: 2, 2
+  index: -1
+kuang
+  rotate: true
+  xy: 2, 220
+  size: 149, 159
+  orig: 149, 159
+  offset: 0, 0
+  index: -1
+kuang2
+  rotate: false
+  xy: 163, 95
+  size: 136, 136
+  orig: 136, 136
+  offset: 0, 0
+  index: -1
+kuang3
+  rotate: true
+  xy: 2, 69
+  size: 149, 157
+  orig: 149, 157
+  offset: 0, 0
+  index: -1
+kuang4
+  rotate: false
+  xy: 163, 233
+  size: 137, 136
+  orig: 137, 136
+  offset: 0, 0
+  index: -1

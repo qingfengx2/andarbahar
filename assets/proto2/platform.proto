@@ -1,0 +1,448 @@
+syntax = "proto3";
+
+package com.cw.chess2.platform;
+
+
+// 用户数据
+message GameUser{
+	uint32 uid 				= 1;			// 用户id
+	uint32 real_user 		= 2;			// 0：真实用户；1：机器人
+	uint32 coin				= 3;			// 用户的金币：此值不一定会填写，根据游戏类型决定
+	string user_nick 		= 4;			// 用户的昵称
+	string user_head 		= 5;			// 用户的头像
+	uint32 user_type  		= 6;			// 用户类型 1 普通 2 控杀 3 补偿 4 新手玩家	// 服务端用
+	int32 paid  			= 7;			// 风控值 // 服务端用
+	int32 withdraw  		= 8;			// 风控值 // 服务端用
+	uint32 hands      		= 9;			// 游戏局数 // 服务端用
+	uint32 weekCardEndTime 	= 10;			// 周卡到期时间
+	uint32 monCardEndTime 	= 11;			// 月卡到期时间
+	int32 winLoseCoin 		= 12;			//输赢金额数量
+	int32 maxConWinRound 	= 13;			//最大连赢局数
+	int32 winRound			= 14;  			//总赢局数
+	int32 vip				= 15;			//vip 等级
+}
+
+// 通用消息
+message CommonResponse{
+	uint32 result = 1;				// 0：成功
+}
+
+/*静态服务定义：这里定义的静态服务，如果是具体游戏，则是动态值*/
+enum ServerType
+{
+	SERVER_TYPE_INVALID						= 0;		// 无效 
+	SERVER_TYPE_GATEWAY						= 1000;		// 网关服务
+	SERVER_TYPE_COMMON						= 1100;		// 通用服务
+	SERVER_TYPE_MATCH						= 1101;		// 匹配服务
+	SERVER_TYPE_BA							= 2002;		// 扣费服务（不直接对外）
+	SERVER_TYPE_RUMMY_						= 3000;		// rummy游戏服务（注：不要直接使用，实际会是3000/3001/3002等等，会在匹配逻辑完成后通知客户端,这里只是标注起始）
+	SERVER_TYPE_TEEN_PATTI_					= 4000;		// teen-patti游戏服务（注：同上)
+	SERVER_TYPE_TEEN_PATTI_WAR_				= 5000;		// teen-patti-war游戏服务（注：同上 go)
+	SERVER_TYPE_DROGON_TIGER_		  		= 6000;		// dragon-tiger游戏服务（注：同上 go)
+	SERVER_TYPE_SEVEN_UP_DOWN_    			= 700;   	// seven-up-down游戏服务（注：同上 go)
+	SERVER_TYPE_TEEN_PATTI_LAI  			= 800;   	// teen-patti-lai游戏服务（注：不要直接使用，实际会是800/801/802等等，会在匹配逻辑完成后通知客户端,这里只是标注起始）
+	SERVER_TYPE_TEEN_PATTI_JD  				= 900;   	// teen-patti-JD游戏服务（注：不要直接使用，实际会是900/901/902等等，会在匹配逻辑完成后通知客户端,这里只是标注起始）
+	SERVER_TYPE_AB  						= 1010;   	// Andar Bahar 百人游戏服务
+	SERVER_TYPE_AB_DESK 					= 1110;   	// Andar Bahar 桌子游戏服务
+	SERVER_TYPE_JHANDI_MUNDA 				= 1200;   	// JHANDI MUNDA 百人游戏服务
+	SERVER_TYPE_CAR_RACING 					= 1300;   	// CAR RACING 百人游戏服务
+	SERVER_TYPE_SLOT_FRUIT 					= 1400;   	// solt fruit 游戏服务
+	SERVER_TYPE_WINGO_LOTTERY 				= 1500;   	// wingo lottery 红绿 百人游戏服务
+	SERVER_TYPE_TEXAS_BR 					= 1600;   	// texas 百人游戏服务
+	SERVER_TYPE_ROCKET 						= 1700;   	// rocket 火箭游戏服务
+	SERVER_TYPE_LUCKY3PATTI 				= 2100;   	// lucky3patti 游戏服务
+}
+
+/***************************************网关消息开始*******************************************/
+enum ServerGatewayCmd{
+	CMD_GATEWAY_INVALID					= 0;			// 无效网关消息 
+	CMD_GATEWAY_LOGIN_REQ				= 1;			// 登录请求：LoginRequest
+	CMD_GATEWAY_LOGIN_RESP				= 2;			// 登录返回：LoginResponse
+	CMD_GATEWAY_LOGOUT_REQ				= 3;			// 请求注销
+	CMD_GATEWAY_LOGOUT_RESP				= 4;			// 返回注销
+	CMD_GATEWAY_DISCONNECT_REQ 			= 5;			// 请求断开
+	CMD_GATEWAY_DISCONNECT_RESP 		= 6;			// 返回断开 
+	CMD_GATEWAY_REPEAT_LOGIN_REQ		= 7;			// 请求重复登录
+	CMD_GATEWAY_REPEAT_LOGIN_RESP		= 8;			// 返回重复登录 
+	CMD_GATEWAY_PING_REQ				= 9;			// 请求心跳 
+	CMD_GATEWAY_PING_RESP				= 10;			// 返回心跳 
+}
+
+// 登录请求 ：这个登录请求的command可能有多个，但是返回取都是一样的
+message LoginRequest{
+  uint32 user_id 	= 1;		// UID
+  string token 		= 2;		// Token
+}
+
+// 登录返回 
+message LoginResponse{
+  uint32 result 	= 1;		// 0 成功；1 userId错误（用户不存在）2 验证错误 3 上一个号未退出
+  uint32 user_id 	= 2;		// UID：这个地方必定和请求中的uid一致，但是为了方便客户端异步处理，把UID返回了
+  uint32 type 		= 3; 		// 游戏类型 ( 1 rummy; 4 teepatti)
+  uint32 game 		= 4; 		// 游戏服务ID(game与table全大于0时,客户端通过game来调用CMD_C_GET_TABLE_STATUS_REQ)
+  uint32 table 		= 5; 		// 桌号ID
+}
+/****************************************网关消息结束************************************************/
+
+
+/****************************************通用平台类消息开始**********************************************/
+enum ServerCommonCmd{
+	CMD_COMMON_INVALID				= 0;			// 无效
+	CMD_NA_1											= 1;			// NA
+	CMD_FREEZE_PLAYER_RESP			= 2;			// 账户被冻结
+	CMD_GET_PLAYER_BALANCE_REQ		= 3;			// 请求金钱：NULL
+	CMD_GET_PLAYER_BALANCE_RESP		= 4;			// 返回金钱：GetPlayerBalanceResponse
+	CMD_NA_5											= 5;			// NA
+	CMD_SYSMESSAGE_TO_USER_RESP		= 6;			// 系统消息：MessageToUserResp
+	CMD_NA_7											= 7;
+	CMD_PHP_2_USER_COMMON_RESP		= 8;			// 这个是转发PHP到客户端的协议：对应的结构PHP_2_USER_DATA_REQ是在web_msg_define.proto中定义的,消息中是嵌套结构，嵌套的协议定义由客户端和PHP自行商定
+	CMD_GET_USER_ATTRI_REQ			= 9;			// 获取用户属性 MSG_GET_USER_ATTRI_REQ
+	CMD_GET_USER_ATTRI_RESP			= 10;			// 获取用户属性 MSG_GET_USER_ATTRI_RESP
+	CMD_UPDATE_USER_ATTRI_REQ		= 11;			// 更新用户属性 MSG_UPDATE_USER_ATTRI_REQ
+	CMD_UPDATE_USER_ATTRI_RESP		= 12;			// 更新用户属性 CommonResponse
+	CMD_GET_BONUS_REQ				= 13;			// NULL
+	CMD_GET_BONUS_RESP				= 14;			// MSG_GET_BONUS_RESP
+	
+	CMD_WEB_RECHARGE_SUCCESS_RESP	= 31;			// 充值成功通知客户端 RechargeNoticeResp
+	CMD_WEB_POPUP_NOTICE_RESP		= 32;			// 弹窗广告通知客户端 PopupNoticeResp
+	CMD_WEB_MAIL_NOTICE_RESP		= 33;			// 后台新邮件通知客户端 MailNoticeResp
+}
+
+enum CurrencyKind{
+	CK_INVALID 		= 0;
+	CK_Money 		= 1;		// 真金
+	CK_Practice 	= 2;		// 训练
+}
+
+// 获取用户余额返回 
+message GetPlayerBalanceResponse{
+  uint32 result 							= 1;				// 是否取到了值, 0 表示取到了值， 1 表示没有取到  
+  uint32 balance 							= 2;				// 存储账户余额 
+  uint32 balance_wins 						= 3;				// 可提现账户余额
+  uint32 partices 							= 4;				// 练习币余额
+  CurrencyKind game_currency 				= 5;				// （建议使用：因为不管怎么样，这个结构会返回所有的数据，但到底显示是真金还是训练币，由其他逻辑保证）
+}
+
+// 系统消息
+message MessageToUserResp{
+	uint32 lastTime = 1;		// 持续时间，单位：秒，最大值2小时=2*60*60
+	string context 	= 2;		// 内容：消息内容
+}
+
+message UserAttri{
+	uint32 user_id = 1;
+	string nick = 2;
+	string head = 3;
+}
+
+message MSG_GET_USER_ATTRI_REQ{
+	repeated uint32 user_ids = 1;	// 最多50个
+}
+
+message MSG_GET_USER_ATTRI_RESP{
+	repeated UserAttri user_attris = 1;
+}
+
+message MSG_UPDATE_USER_ATTRI_REQ{
+	UserAttri user_attri = 1;	// 更新的属性，注意：只能更新自己的，UserAttri中的user_id可以不填
+}
+
+message MSG_GET_BONUS_RESP{
+	uint32 bonus = 1;
+}
+//充值成功通知客户端
+message RechargeNoticeResp{
+	uint32 user_id = 1;		// 用户Id
+	uint32 amount = 2;		// 具体额度
+	uint32 bonus = 3;	   // 赠送bonus金额
+	uint32 type = 4;	  // 充值类型 1首充，2普通，3快充 4 周卡 5 月卡.....
+	uint32 cash = 5;	  //赠送的真金
+}
+//代理后台弹窗通知客户端
+message PopupNoticeResp{
+	uint32 noticeId  		= 1;	// 公告id
+	string bundle_name		= 2;	// 包名 如com.test.teenpatti
+	repeated uint32 uids 	= 3;	// 后台 uid列表，空发给所有，客户端不用
+}
+//后台新邮件通知客户端
+message MailNoticeResp{
+	
+}
+/****************************************通用平台类消息结束**********************************************/
+
+
+
+
+
+/*************************************匹配服务类消息开始**********************************************/
+// 客户端请求定义
+enum ServerMatchCmd{
+	CMD_MATCH_INVALID				= 0;			// 无效
+	CMD_GET_GAME_KIND_REQ			= 1;			// 请求游戏种类：GameKindRequest
+	CMD_GET_GAME_KIND_RESP			= 2;			// 返回游戏种类：GameKindResponse
+	CMD_GET_ROOMS_REQ				= 3;			// 获取所有游戏类型：由于我们是匹配机制，这个暂时不实现
+	CMD_GET_ROOMS_RESP				= 4;			// 
+	CMD_MATCH_REQ					= 5;			// 请求rummy匹配：MatchRequest
+	CMD_MATCH_RESP					= 6;			// 返回rummy匹配：MatchResponse（这里只是告诉客户端收到了匹配申请）
+	CMD_MATCH_NA_7					= 7;
+	CMD_MATCH_OK_RESP				= 8;			// 通知客户端匹配成功：MatchOKResponse
+}
+
+/* 游戏支持的种类 */
+enum GameKind{
+	INVALID 						= 0;
+	GAME_KIND_Rummy 				= 1;			// rummy
+	GAME_KIND_Rummy_pool 			= 2;			// rummy_pool
+	GAME_KIND_Rummy_10 				= 3;			// rummy_10
+	GAME_KIND_TEEPATTI 				= 4;			// teepatti
+	GAME_KIND_RedBlack 				= 5;			// redblack
+	GAME_KIND_DragonTiger 			= 6;			// 龙虎
+	GAME_KIND_SevenUpDown 			= 7;			// 7updown
+	GAME_KIND_Teenpatti_Lai			= 8;			//Teenpatti癞子
+	GAME_KIND_Teenpatti_JD			= 9;			//Teenpatti经典玩法
+	GAME_KIND_Andar_Bahar			= 10;			//Andar Bahar
+	GAME_KIND_AB_DESK 				= 20;   		// Andar Bahar 桌子游戏
+	GAME_KIND_JHANDI_MUNDA 			= 12;   		// JHANDI MUNDA 百人游戏
+	GAME_KIND_Car_Racing			= 13;			//Car Racing 百人游戏
+	GAME_KIND_Slot_Fruit			= 14;			//Slot Fruit 游戏
+	GAME_KIND_Wingo_Lottery			= 15;			//Wingo Lottery 红绿 百人游戏
+	GAME_KIND_Texas_Br				= 16;			//texas 百人游戏
+	GAME_KIND_Rocket				= 17;			//Rocket 游戏
+	GAME_KIND_Teenpatti_Star		= 18;			//Teenpatti Star 游戏
+	GAME_KIND_Teenpatti_Final		= 19;			//Teenpatti final 游戏
+	GAME_KIND_Lucky3patti			= 21;			//lucky 3patti 游戏
+	GAME_KIND_Teenpatti_Potblind	= 22;			//Teenpatti potblind 游戏
+	GAME_KIND_Teenpatti_Must		= 23;			//Teenpatti must 游戏
+}
+
+// 游戏级别的基础定义
+message GameLevelDesc{
+	uint32 level_id 						= 1;			// 级别ID
+	CurrencyKind currency_kind 				= 2;			// 真金还是训练(这个逻辑客户端要判定) 
+	uint32 currency_limit 					= 3;			// 进入限制（这个逻辑客户端不需要判定，只显示，服务器会下发，免得以后要修改逻辑）
+	string level_name 						= 4;			// 级别名字，例如（中级房）
+	uint32 user_count 						= 5;			// 这个级别有多少个用户在玩
+	uint32 tax_permillage 					= 6;			// 抽水比率（千分比）
+	uint32 max_limit 						= 7;			// 进入最大限制
+}
+
+// rummy每一个级别的数据描叙
+message RummyLevelDesc
+{
+	GameLevelDesc game_level 	= 1;				// 游戏通用描叙
+	uint32 rummy_players_size 	= 2;				// 一个桌子支持几个玩家，可能是2/6
+	uint32 score_value 			= 3;				// rummy一张牌的分数，后续计算全部根据这个值来
+}
+
+// teepatti每一个级别的数据描叙
+message TeepattiLevelDesc
+{
+	GameLevelDesc game_level 	= 1;				// 游戏通用描叙
+	uint32 blind 				= 2;				// teepatti是按照盲注的倍数来计算分数
+	uint32 single_max_bet 		= 3;				// 单个用户最大封顶值
+	uint32 table_max_bet 		= 4;				// 桌子最大封顶值
+	uint32 cash_user_time 		= 5;				// 玩家局补币时间
+	uint32 cash_ai_time 		= 6;				// AI局补币时间
+}
+
+// teen-patti-war
+message TeenPattiWarLevelDesc
+{
+  uint32 room_id          = 1;        // 房间ID
+  uint32 game_type        = 2;        // 游戏类型: 5 teen-patti-war
+  uint32 min_chips        = 3;        // 允许最小下注额度
+  uint32 red_bet          = 4;        // 红方最大下注额度
+  uint32 black_bet        = 5;        // 黑方最大下注额度
+  uint32 luck_bet         = 6;        // 幸运方最大下注额度
+  repeated uint32 chips   = 7;        // 筹码值
+}
+
+// dragon-tiger
+message DragonTigerLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 6 dragon-tiger
+    uint32 min_chips        = 3;        // 允许最小下注额度
+    uint32 dragon_bet       = 4;        // 龙方最大下注额度
+    uint32 tiger_bet        = 5;        // 虎方最大下注额度
+    uint32 tie_bet          = 6;        // 和方最大下注额度
+   repeated uint32 chips    = 7;        // 筹码值
+   uint32 tieReturn1        = 8;        // 和 廣告用戶返還比例 百分比
+   uint32 tieReturn2        = 9;        // 和 自然用戶返還比例 百分比
+}
+
+// seven-up-down
+message SevenUpDownLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 7 seven_down
+    uint32 min_chips        = 3;        // 允许最小下注额度
+    uint32 down_bet         = 4;        // down方最大下注额度
+    uint32 up_bet           = 5;        // up方最大下注额度
+    uint32 seven_bet        = 6;        // seven方最大下注额度
+   repeated uint32 chips    = 7;        // 筹码值
+}
+// andar-bahar
+message AndarBaharLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 10 AndarBahar
+    uint32 min_chips        = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
+	repeated uint32 chips    = 5;        // 筹码值
+}
+// andar-bahar-desk
+message AndarBaharDeskLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 11 AndarBahar
+    uint32 min_chips        = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
+	repeated uint32 chips    = 5;        // 筹码值
+}
+//Jhandi Munda
+message JhandiMundaLevelDesc
+{
+    uint32 room_id           = 1;        // 房间ID
+    uint32 game_type         = 2;        // 游戏类型: 12
+    uint32 min_chips         = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 Jhandal,2 Burja,3 Itta,4 Paan,5 Hukum ,6 Chidi
+	repeated uint32 chips    = 5;        // 筹码值
+}
+// car-racing
+message CarRacingLevelDesc
+{
+    uint32 room_id           = 1;        // 房间ID
+    uint32 game_type         = 2;        // 游戏类型: 13
+    uint32 min_chips         = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 法拉利 ferrari;  2 兰博基尼 lamborghini; 3 保时捷 porsche,4 奔驰 mercedes,5 宝马 BMW,6 奥迪 Audi,7 马恒达Mahindra,8 铃木 Maruti Suzuki,
+	repeated uint32 chips    = 5;        // 筹码值
+}
+//fruit 水果机
+message FruitLevelDesc
+{
+    uint32 room_id           = 1;        // 房间ID
+    uint32 game_type         = 2;        // 游戏类型: 14
+    uint32 min_chips         = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  无效
+	repeated uint32 chips    = 5;        // 筹码值
+}
+// wingo-lottery
+message WinGoLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 15 wingo-lottery
+    uint32 min_chips        = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 green;2 red; 3:violet,0-9 :4-13
+	repeated uint32 chips    = 5;        // 筹码值
+}
+// texas-br
+message TexasBrLevelDesc
+{
+    uint32 room_id          = 1;        // 房间ID
+    uint32 game_type        = 2;        // 游戏类型: 16 texas-br
+    uint32 min_chips        = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;       // 各区域最大下注值  区域 1 Cowboy;2 BULL; 3:平 ..4-13
+	repeated uint32 chips    = 5;       // 筹码值
+}
+//Rocket
+message RocketLevelDesc
+{
+    uint32 room_id           = 1;        // 房间ID
+    uint32 game_type         = 2;        // 游戏类型: 17 Rocket
+    uint32 min_chips         = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1
+	repeated uint32 chips    = 5;        // 筹码值
+}
+//Lucky 3patti
+message Lucky3pattiLevelDesc
+{
+    uint32 room_id           = 1;        // 房间ID
+    uint32 game_type         = 2;        // 游戏类型: 21
+    uint32 min_chips         = 3;        // 允许最小下注额度
+	repeated uint32 maxBets  = 4;        // 各区域最大下注值  区域 1 High,2 Pair,3 color,4 sequence,5 pure seq ,6 set
+	repeated uint32 chips    = 5;        // 筹码值
+}
+// 游戏种类
+message GameKindRequest{
+	GameKind game_kind = 1;				// 请求获取的游戏对应的数据，如果填写INVALID，会返回所有支持的游戏
+}
+message GameKindResponse{		
+	repeated GameKind game_kind 				= 1;				// 游戏类型
+	repeated RummyLevelDesc rummy_levels 		= 2;				// rummy的级别描叙
+	repeated TeepattiLevelDesc teepatti_levels 	= 3;				// teepatii的级别描叙
+}
+
+
+
+// 进行匹配
+message MatchRequest{
+	uint32 action 			= 1;		// 0：请求匹配；1：取消匹配
+	/*
+	如果是取消，则后续参数也需要填写，以防止未来可以同时匹配多个游戏而只取消其中某一个；
+	只有确实取消了，消息才会返回1，防止已经匹配好了，但是再发取消匹配的情况
+	如果取消失败，会返回102，客户端可以解除匹配状态
+	*/
+	GameKind game_kind 	= 2;
+	uint32 game_level 	= 3;
+}
+
+// 匹配通知
+message MatchResponse{
+	uint32 result 		= 1;			// 0：成功申请匹配；1：成功取消匹配；100：余额不够；101：目前已经在匹配队列中，不能重复匹配；102：不在匹配队列中，无法取消
+	uint32 max_time 	= 2;			// 最大匹配时间：单位秒
+	uint32 average_time = 3;			// 平均匹配时间：单位秒
+}
+
+// 匹配成功通知
+message MatchOKResponse{
+	uint32 result 		= 1;			// 0：成功： 103：服务器正在维护中
+	uint32 game_type 	= 2;			// 这个值就是动态servertype，后续我们就正式开始游戏了
+	uint32 table_id 	= 3;			// 分配在哪个桌子上
+	GameKind game_kind 	= 4;			// 以下字段和请求一致，方便客户端处理
+	uint32 game_level 	= 5;			// 游戏级别ID
+}
+/****************************************匹配服务类消息结束**********************************************/
+
+/****************************************游戏通用类消息开始**********************************************/
+enum ServerGameCommonCmd{
+	CMD_C_GAME_INVALID					= 0;
+	CMD_C_GAME_MAGIC_CHAT_REQ			= 70;	// 用户请求魔法表情聊天：MsgMagicChatReq
+	CMD_C_GAME_MAGIC_CHAT_RESP			= 71;	// 用户请求魔法表情聊天回复：MsgMagicChatResp
+	CMD_C_GAME_ROOM_LIST_REQ			= 80;	// 百人类用户请求房间列表： GameRoomListReq //主命令为SERVER_TYPE_TEEN_PATTI_WAR_ 等...
+	CMD_C_GAME_ROOM_LIST_RESP			= 81;	// 百人类用户请求房间列表回复： GameRoomListResp
+}
+
+// 用户聊天魔法表情请求
+message MsgMagicChatReq{
+	uint32 tableId 		= 1;  	// 桌子id
+	uint32 sendUserId 	= 2;	// 发送的用户id
+	uint32 toUserId 	= 3;	// 目标用户id
+	uint32 mogicId 		= 4;	// 魔法表情id
+}
+
+// 用户聊天魔法表情回复转发 所有用户收到
+message MsgMagicChatResp{
+	uint32 tableId 		= 1;  	// 桌子id
+	uint32 sendUserId 	= 2;	// 发送的用户id
+	uint32 toUserId 	= 3;	// 目标用户id
+	uint32 mogicId 		= 4;	// 魔法表情id
+}
+//百人类用户请求房间列表
+message GameRoomListReq{
+	
+}
+//百人类用户请求房间列表回复
+message GameRoomListResp{
+	repeated GameRoomInfo roomList = 1;//房间列表
+}
+//房间信息
+message GameRoomInfo{
+	uint32 roomId = 1;				//房间id
+	uint32 maxPlayers = 2;			//最大人数
+	uint32 minChip = 3;				//最小筹码
+	uint32 minEntry = 4;			//最小进入金额
+	uint32 onlinePlayers = 5;		//在线人数
+}
+/****************************************游戏通用类消息结束**********************************************/
+
