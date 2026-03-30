@@ -17,7 +17,11 @@ import { PopupVIew } from './PopupVIew';
 import { GameMenu } from './GameMenu';
 import { gamePlayers } from './gamePlayers';
 const { ccclass, property } = _decorator;
-
+interface WinnerTargetInfo {
+    node: Node;
+    hasSeat: boolean;
+    isSelf: boolean;
+}
 @ccclass('AndarBaharGame')
 export class AndarBaharGame extends Component {
 
@@ -293,7 +297,7 @@ export class AndarBaharGame extends Component {
             //获取幸运星头像的位置
             let node = this.userPlayerTb[1];
             if (node) {
-                let startPos = node.getPosition();
+                let startPos = find("Node/mask", node).getPosition();
                 // startPos = node.parent.convertToWorldSpaceAR(startPos);
 
                 let star_node = this.star_arr[area];
@@ -819,6 +823,8 @@ export class AndarBaharGame extends Component {
         this.resetTable();
 
         this.gameDesc = message.desc;
+        config.odds = message.desc.odds;
+        console.log("config.odds", config.odds);
         this.gamePhase = message.gamePhase;
         this.roadData = message.road;
         this.canRebet = message.repeatBet === 1;
@@ -1314,7 +1320,7 @@ export class AndarBaharGame extends Component {
 
         return coinList;
     }
-    sendCoinToSeat(dstNode, type, coinList) {
+    sendCoinToSeat(dstNode, type, coinList, winnerTargetInfo: WinnerTargetInfo = null) {
         let pool = this.areaPoolArr[type - 1];
 
         if (pool == null) {
@@ -1455,7 +1461,7 @@ export class AndarBaharGame extends Component {
                     let totalWin = 0;
                     for (let index = 0; index < wins.length; index++) {
                         let winInfo = wins[index];
-                        totalWin += winInfo.amount;
+                        totalWin += Number(winInfo.amount);
                     }
 
                     this.timeoutGameOver = setTimeout(() => {
@@ -1628,7 +1634,6 @@ export class AndarBaharGame extends Component {
 
             if (proto.type === platform.ServerType.SERVER_TYPE_AB) {
                 // console.log('接收到:' + proto.type + ',' + proto.protocol);
-
                 let andarbaharProto = awesomeRoot.com.cw.chess2.andarbahar;
                 let cmd = andarbaharProto.AndarBaharCmd;
                 let gamePhase = andarbaharProto.GamePhase;
@@ -1646,11 +1651,32 @@ export class AndarBaharGame extends Component {
                 } else if (proto.protocol === cmd.CMD_C_GAME_GET_TABLE_STATUS_RESP) {  //获取桌子信息
                     let GameGetTableStatusResp = andarbaharProto.GameGetTableStatusResp;
                     let message = GameGetTableStatusResp.decode(proto.data);
-
-                    console.log('获取桌子信息andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('获取桌子信息andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     this.process_table_status(message);
                     this.LoadingSprite.active = false;
                     this.gameLoading.stopLoading();
+                } else if (proto.protocol === cmd.CMD_C_GAME_GET_DRAWLIST_RESP) {
+                    let GetDrawListResp = andarbaharProto.GetDrawListResp;
+                    let message = GetDrawListResp.decode(proto.data);
+                    // console.log('历史记录andarbahar结果=========:[' + JSON.stringify(message) + ']');
+                    this.gameMenu.openHistoryPanel(message);
+                    // this.panel_room_histroy_lhd.initDataInView(message.draws);
+                } else if (proto.protocol === cmd.CMD_C_GAME_GET_SELFRECORD_RESP) {
+
+                    let recordResp = andarbaharProto.GetSelfRecordResp;
+                    let message = recordResp.decode(proto.data);
+                    console.log('下注数据andarbahar结果=========:[' + JSON.stringify(message) + ']');
+                    this.gameMenu.openBetHistoryPanel(message);
+                } else if (proto.protocol === cmd.CMD_C_GAME_GET_DRAWINFO_RESP) {
+                    let drawInfoResp = andarbaharProto.GetDrawInfoResp;
+                    let message = drawInfoResp.decode(proto.data);
+                    // console.log('往期信息=========:[' + JSON.stringify(message) + ']');
+                    // AndarbaharManager.instance.openPanel('prefab/Round_Details', (panelNode) => {
+                    //     const round_Details = panelNode.getComponent(roundDetails);
+                    //     if (round_Details) {
+                    //         round_Details.initDataInView(message.record);
+                    //     }
+                    // });
                 } else if (proto.protocol === cmd.CMD_C_GAME_LEAVE_RESP) { // 退出房间返回
                     let GameLeaveResp = awesomeRoot.com.cw.chess2.andarbahar.GameLeaveResp;
                     let message = GameLeaveResp.decode(proto.data);
@@ -1684,7 +1710,7 @@ export class AndarBaharGame extends Component {
                     let GameStartNoticeResp = andarbaharProto.GameStartNoticeResp;
                     let message = GameStartNoticeResp.decode(proto.data);
 
-                    console.log("开始通知 === " + JSON.stringify(message))
+                    // console.log("开始通知 === " + JSON.stringify(message))
                     let card = this.centerCard.getComponent(ABCard);
                     if (card) {
                         card.initCardValue(message.joker);
@@ -1868,7 +1894,7 @@ export class AndarBaharGame extends Component {
                     let MsgChatResp = andarbaharProto.MsgChatResp;
                     let message = MsgChatResp.decode(proto.data);
 
-                    console.log('聊天返回 弹幕 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('聊天返回 弹幕 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
                     // this.playDanmu(message);
                 } else if (proto.protocol === platform.ServerGameCommonCmd.CMD_C_GAME_MAGIC_CHAT_RESP) {
@@ -1876,7 +1902,7 @@ export class AndarBaharGame extends Component {
                     // this.refreshRecharge();
                     // let MsgMagicChatResp = platform.MsgMagicChatResp;
                     // let message = MsgMagicChatResp.decode(proto.data);
-                    console.log("收到互动道具消息", message);
+                    // console.log("收到互动道具消息", message);
 
                     // this.playPorpsMagic(message.tableId, message.sendUserId, message.toUserId, message.mogicId);
                 } else if (proto.protocol === cmd.CMD_C_GAME_GET_PLAYERS_RESP) {

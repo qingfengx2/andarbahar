@@ -115,7 +115,7 @@ export class ABPlayers extends Component {
     updateMoney(num: any) {
         this.money = num;
         if (this.label_money != null) {
-            this.label_money.string = num / 100;
+            this.label_money.string = (Number(num) / 100).toString();
         }
     }
 
@@ -127,7 +127,7 @@ export class ABPlayers extends Component {
     playWinAnim(nums: any) {
         let pos = this.winLabel.node.getPosition();
         this.winLabel.node.setPosition(pos.x, pos.y - 100);
-        this.winLabel.string = "+" + nums / 100;
+        this.winLabel.string = "+" + (Number(nums) / 100);
         this.winLabel.node.active = true;
         tween(this.winLabel.node)
             .to(0.8, { position: new Vec3(pos.x, pos.y, 0) })

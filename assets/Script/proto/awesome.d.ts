@@ -1685,6 +1685,765 @@ declare namespace awesome {
                         public static getTypeUrl(typeUrlPrefix?: string): string;
                     }
                 }
+
+                namespace dragon_tiger {
+
+                    enum DragonTigerCmd {
+                        CMD_C_INVALID = 0,
+                        CMD_C_GAME_ENTER_REQ = 1,
+                        CMD_C_GAME_ENTER_RESP = 2,
+                        CMD_C_GAME_GET_TABLE_STATUS_REQ = 3,
+                        CMD_C_GAME_GET_TABLE_STATUS_RESP = 4,
+                        CMD_C_GAME_BET_REQ = 5,
+                        CMD_C_GAME_BET_RESP = 6,
+                        CMD_C_GAME_REPEAT_BET_REQ = 7,
+                        CMD_C_GAME_REPEAT_BET_RESP = 8,
+                        CMD_C_GAME_LEAVE_REQ = 9,
+                        CMD_C_GAME_LEAVE_RESP = 10,
+                        CMD_C_GAME_READY_NOTICE_RESP = 12,
+                        CMD_C_GAME_START_NOTICE_RESP = 14,
+                        CMD_C_GAME_BET_NOTICE_RESP = 16,
+                        CMD_C_GAME_SHOW_RESULT_RESP = 18,
+                        CMD_C_GAME_SETTLE_NOTICE_RESP = 20,
+                        CMD_C_GAME_GET_PLAYERS_REQ = 21,
+                        CMD_C_GAME_GET_PLAYERS_RESP = 22,
+                        CMD_C_GAME_SYNC_CHAIR_RESP = 24,
+                        CMD_C_GAME_SYNC_BET_RESP = 26,
+                        CMD_C_GAME_SYNC_PLAYER_COUNT_RESP = 28,
+                        CMD_C_GAME_REPEAT_BET_NOTICE_RESP = 30,
+                        CMD_C_GAME_NO_BET_NOTICE_RESP = 32,
+                        CMD_C_GAME_SYNC_BALANCE_RESP = 34,
+                        CMD_C_GAME_GET_SELFRECORD_REQ = 41,
+                        CMD_C_GAME_GET_SELFRECORD_RESP = 42,
+                        CMD_C_GAME_GET_DRAWLIST_REQ = 43,
+                        CMD_C_GAME_GET_DRAWLIST_RESP = 44,
+                        CMD_C_GAME_GET_DRAWINFO_REQ = 45,
+                        CMD_C_GAME_GET_DRAWINFO_RESP = 46,
+                        CMD_C_CHAT_REQ = 62,
+                        CMD_C_CHAT_RESP = 63,
+                        CMD_C_GAME_CAN_UPDATE_BALANCE_RESP = 100
+                    }
+
+                    enum GamePhase {
+                        PHS_INVALID = 0,
+                        PHS_GAME_READY = 1,
+                        PHS_GAME_START = 2,
+                        PHS_GAME_BETTING = 3,
+                        PHS_GAME_RESULT = 4,
+                        PHS_GAME_SETTLE = 5
+                    }
+
+                    interface IBetData {
+                        index?: (number|null);
+                        bet?: (Long|null);
+                    }
+
+                    class BetData implements IBetData {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IBetData);
+                        public index: number;
+                        public bet: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IBetData): com.cw.chess2.dragon_tiger.BetData;
+                        public static encode(m: com.cw.chess2.dragon_tiger.BetData, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.BetData;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IUserBetList {
+                        userId?: (number|null);
+                        bets?: (com.cw.chess2.dragon_tiger.BetData[]|null);
+                    }
+
+                    class UserBetList implements IUserBetList {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IUserBetList);
+                        public userId: number;
+                        public bets: com.cw.chess2.dragon_tiger.BetData[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IUserBetList): com.cw.chess2.dragon_tiger.UserBetList;
+                        public static encode(m: com.cw.chess2.dragon_tiger.UserBetList, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.UserBetList;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IChairStatus {
+                        bUser?: (number|null);
+                        chairIndex?: (number|null);
+                        user?: (com.cw.chess2.platform.GameUser|null);
+                    }
+
+                    class ChairStatus implements IChairStatus {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IChairStatus);
+                        public bUser: number;
+                        public chairIndex: number;
+                        public user?: (com.cw.chess2.platform.GameUser|null);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IChairStatus): com.cw.chess2.dragon_tiger.ChairStatus;
+                        public static encode(m: com.cw.chess2.dragon_tiger.ChairStatus, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.ChairStatus;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IAreaBet {
+                        totalBalance?: (Long|null);
+                        ownerBalance?: (Long|null);
+                    }
+
+                    class AreaBet implements IAreaBet {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IAreaBet);
+                        public totalBalance: Long;
+                        public ownerBalance: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IAreaBet): com.cw.chess2.dragon_tiger.AreaBet;
+                        public static encode(m: com.cw.chess2.dragon_tiger.AreaBet, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.AreaBet;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IRoadData {
+                        winner?: (number|null);
+                        card?: (number|null);
+                        period?: (string|null);
+                    }
+
+                    class RoadData implements IRoadData {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IRoadData);
+                        public winner: number;
+                        public card: number;
+                        public period: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IRoadData): com.cw.chess2.dragon_tiger.RoadData;
+                        public static encode(m: com.cw.chess2.dragon_tiger.RoadData, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.RoadData;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameGetTableStatusReq {
+                    }
+
+                    class GameGetTableStatusReq implements IGameGetTableStatusReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameGetTableStatusReq);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameGetTableStatusReq): com.cw.chess2.dragon_tiger.GameGetTableStatusReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameGetTableStatusReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameGetTableStatusReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameGetTableStatusResp {
+                        desc?: (com.cw.chess2.platform.DragonTigerLevelDesc|null);
+                        roundId?: (string|null);
+                        gamePhase?: (com.cw.chess2.dragon_tiger.GamePhase|null);
+                        timeCount?: (number|null);
+                        timeLimit?: (number|null);
+                        chairs?: (com.cw.chess2.dragon_tiger.ChairStatus[]|null);
+                        self?: (com.cw.chess2.platform.GameUser|null);
+                        dragonBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        tigerBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        tieBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        dragonCard?: (number|null);
+                        tigerCard?: (number|null);
+                        betList?: (com.cw.chess2.dragon_tiger.UserBetList[]|null);
+                        road?: (com.cw.chess2.dragon_tiger.RoadData[]|null);
+                        repeatBet?: (number|null);
+                        playerCount?: (number|null);
+                        winner?: (number|null);
+                        secretKey?: (string|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                        currencyStr?: (string|null);
+                    }
+
+                    class GameGetTableStatusResp implements IGameGetTableStatusResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameGetTableStatusResp);
+                        public desc?: (com.cw.chess2.platform.DragonTigerLevelDesc|null);
+                        public roundId: string;
+                        public gamePhase: com.cw.chess2.dragon_tiger.GamePhase;
+                        public timeCount: number;
+                        public timeLimit: number;
+                        public chairs: com.cw.chess2.dragon_tiger.ChairStatus[];
+                        public self?: (com.cw.chess2.platform.GameUser|null);
+                        public dragonBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public tigerBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public tieBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public dragonCard: number;
+                        public tigerCard: number;
+                        public betList: com.cw.chess2.dragon_tiger.UserBetList[];
+                        public road: com.cw.chess2.dragon_tiger.RoadData[];
+                        public repeatBet: number;
+                        public playerCount: number;
+                        public winner: number;
+                        public secretKey: string;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public currencyStr: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameGetTableStatusResp): com.cw.chess2.dragon_tiger.GameGetTableStatusResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameGetTableStatusResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameGetTableStatusResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameGetTableEmptyResp {
+                    }
+
+                    class GameGetTableEmptyResp implements IGameGetTableEmptyResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameGetTableEmptyResp);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameGetTableEmptyResp): com.cw.chess2.dragon_tiger.GameGetTableEmptyResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameGetTableEmptyResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameGetTableEmptyResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameEnterReq {
+                    }
+
+                    class GameEnterReq implements IGameEnterReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameEnterReq);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameEnterReq): com.cw.chess2.dragon_tiger.GameEnterReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameEnterReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameEnterReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameEnterResp {
+                        result?: (number|null);
+                    }
+
+                    class GameEnterResp implements IGameEnterResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameEnterResp);
+                        public result: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameEnterResp): com.cw.chess2.dragon_tiger.GameEnterResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameEnterResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameEnterResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameBetReq {
+                        index?: (number|null);
+                        bet?: (Long|null);
+                    }
+
+                    class GameBetReq implements IGameBetReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameBetReq);
+                        public index: number;
+                        public bet: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameBetReq): com.cw.chess2.dragon_tiger.GameBetReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameBetReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameBetReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameBetResp {
+                        result?: (number|null);
+                        index?: (number|null);
+                        bet?: (Long|null);
+                        myBet?: (Long|null);
+                        totalBet?: (Long|null);
+                        balance?: (Long|null);
+                    }
+
+                    class GameBetResp implements IGameBetResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameBetResp);
+                        public result: number;
+                        public index: number;
+                        public bet: Long;
+                        public myBet: Long;
+                        public totalBet: Long;
+                        public balance: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameBetResp): com.cw.chess2.dragon_tiger.GameBetResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameBetResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameBetResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameBettingNotify {
+                        index?: (number|null);
+                        bet?: (Long|null);
+                        totalBet?: (Long|null);
+                        userId?: (number|null);
+                        balance?: (Long|null);
+                    }
+
+                    class GameBettingNotify implements IGameBettingNotify {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameBettingNotify);
+                        public index: number;
+                        public bet: Long;
+                        public totalBet: Long;
+                        public userId: number;
+                        public balance: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameBettingNotify): com.cw.chess2.dragon_tiger.GameBettingNotify;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameBettingNotify, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameBettingNotify;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameRepeatBetReq {
+                    }
+
+                    class GameRepeatBetReq implements IGameRepeatBetReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameRepeatBetReq);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameRepeatBetReq): com.cw.chess2.dragon_tiger.GameRepeatBetReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameRepeatBetReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameRepeatBetReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameRepeatBetNoticeResp {
+                        userId?: (number|null);
+                        balance?: (Long|null);
+                        totalDragonBet?: (Long|null);
+                        totalTigerBet?: (Long|null);
+                        totalTieBet?: (Long|null);
+                        list?: (com.cw.chess2.dragon_tiger.BetData[]|null);
+                    }
+
+                    class GameRepeatBetNoticeResp implements IGameRepeatBetNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameRepeatBetNoticeResp);
+                        public userId: number;
+                        public balance: Long;
+                        public totalDragonBet: Long;
+                        public totalTigerBet: Long;
+                        public totalTieBet: Long;
+                        public list: com.cw.chess2.dragon_tiger.BetData[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameRepeatBetNoticeResp): com.cw.chess2.dragon_tiger.GameRepeatBetNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameRepeatBetNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameRepeatBetNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameRepeatBetResp {
+                        result?: (number|null);
+                        balance?: (Long|null);
+                        dragonBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        tigerBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        tieBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        list?: (com.cw.chess2.dragon_tiger.BetData[]|null);
+                    }
+
+                    class GameRepeatBetResp implements IGameRepeatBetResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameRepeatBetResp);
+                        public result: number;
+                        public balance: Long;
+                        public dragonBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public tigerBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public tieBet?: (com.cw.chess2.dragon_tiger.AreaBet|null);
+                        public list: com.cw.chess2.dragon_tiger.BetData[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameRepeatBetResp): com.cw.chess2.dragon_tiger.GameRepeatBetResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameRepeatBetResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameRepeatBetResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameLeaveReq {
+                    }
+
+                    class GameLeaveReq implements IGameLeaveReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameLeaveReq);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameLeaveReq): com.cw.chess2.dragon_tiger.GameLeaveReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameLeaveReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameLeaveReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameLeaveResp {
+                        result?: (number|null);
+                    }
+
+                    class GameLeaveResp implements IGameLeaveResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameLeaveResp);
+                        public result: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameLeaveResp): com.cw.chess2.dragon_tiger.GameLeaveResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameLeaveResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameLeaveResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameReadyNoticeResp {
+                    }
+
+                    class GameReadyNoticeResp implements IGameReadyNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameReadyNoticeResp);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameReadyNoticeResp): com.cw.chess2.dragon_tiger.GameReadyNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameReadyNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameReadyNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameStartNoticeResp {
+                    }
+
+                    class GameStartNoticeResp implements IGameStartNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameStartNoticeResp);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameStartNoticeResp): com.cw.chess2.dragon_tiger.GameStartNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameStartNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameStartNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameBetNoticeResp {
+                        count?: (number|null);
+                        repeatBet?: (number|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                        period?: (string|null);
+                    }
+
+                    class GameBetNoticeResp implements IGameBetNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameBetNoticeResp);
+                        public count: number;
+                        public repeatBet: number;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public period: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameBetNoticeResp): com.cw.chess2.dragon_tiger.GameBetNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameBetNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameBetNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameResultResp {
+                        dragonCard?: (number|null);
+                        tigerCard?: (number|null);
+                        winner?: (number|null);
+                        secretKey?: (string|null);
+                        period?: (string|null);
+                    }
+
+                    class GameResultResp implements IGameResultResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameResultResp);
+                        public dragonCard: number;
+                        public tigerCard: number;
+                        public winner: number;
+                        public secretKey: string;
+                        public period: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameResultResp): com.cw.chess2.dragon_tiger.GameResultResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameResultResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameResultResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IWinnerBalance {
+                        index?: (number|null);
+                        amount?: (Long|null);
+                        bets?: (Long|null);
+                    }
+
+                    class WinnerBalance implements IWinnerBalance {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IWinnerBalance);
+                        public index: number;
+                        public amount: Long;
+                        public bets: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IWinnerBalance): com.cw.chess2.dragon_tiger.WinnerBalance;
+                        public static encode(m: com.cw.chess2.dragon_tiger.WinnerBalance, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.WinnerBalance;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IWinnerData {
+                        userId?: (number|null);
+                        balance?: (Long|null);
+                        wins?: (com.cw.chess2.dragon_tiger.WinnerBalance[]|null);
+                    }
+
+                    class WinnerData implements IWinnerData {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IWinnerData);
+                        public userId: number;
+                        public balance: Long;
+                        public wins: com.cw.chess2.dragon_tiger.WinnerBalance[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IWinnerData): com.cw.chess2.dragon_tiger.WinnerData;
+                        public static encode(m: com.cw.chess2.dragon_tiger.WinnerData, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.WinnerData;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameWinNoticeResp {
+                        winners?: (com.cw.chess2.dragon_tiger.WinnerData[]|null);
+                    }
+
+                    class GameWinNoticeResp implements IGameWinNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameWinNoticeResp);
+                        public winners: com.cw.chess2.dragon_tiger.WinnerData[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameWinNoticeResp): com.cw.chess2.dragon_tiger.GameWinNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameWinNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameWinNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameGetPlayersReq {
+                        page?: (number|null);
+                    }
+
+                    class GameGetPlayersReq implements IGameGetPlayersReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameGetPlayersReq);
+                        public page: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameGetPlayersReq): com.cw.chess2.dragon_tiger.GameGetPlayersReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameGetPlayersReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameGetPlayersReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameGetPlayersResp {
+                        users?: (com.cw.chess2.platform.GameUser[]|null);
+                        winUsers?: (com.cw.chess2.platform.GameUser[]|null);
+                        page?: (number|null);
+                        count?: (number|null);
+                    }
+
+                    class GameGetPlayersResp implements IGameGetPlayersResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameGetPlayersResp);
+                        public users: com.cw.chess2.platform.GameUser[];
+                        public winUsers: com.cw.chess2.platform.GameUser[];
+                        public page: number;
+                        public count: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameGetPlayersResp): com.cw.chess2.dragon_tiger.GameGetPlayersResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameGetPlayersResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameGetPlayersResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameSyncChairResp {
+                        chairs?: (com.cw.chess2.dragon_tiger.ChairStatus[]|null);
+                    }
+
+                    class GameSyncChairResp implements IGameSyncChairResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameSyncChairResp);
+                        public chairs: com.cw.chess2.dragon_tiger.ChairStatus[];
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameSyncChairResp): com.cw.chess2.dragon_tiger.GameSyncChairResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameSyncChairResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameSyncChairResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameSyncPlayerCountResp {
+                        count?: (number|null);
+                    }
+
+                    class GameSyncPlayerCountResp implements IGameSyncPlayerCountResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameSyncPlayerCountResp);
+                        public count: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameSyncPlayerCountResp): com.cw.chess2.dragon_tiger.GameSyncPlayerCountResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameSyncPlayerCountResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameSyncPlayerCountResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameNoBetNoticeResp {
+                        count?: (number|null);
+                    }
+
+                    class GameNoBetNoticeResp implements IGameNoBetNoticeResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameNoBetNoticeResp);
+                        public count: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameNoBetNoticeResp): com.cw.chess2.dragon_tiger.GameNoBetNoticeResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameNoBetNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameNoBetNoticeResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGameSyncBalanceResp {
+                        balance?: (Long|null);
+                    }
+
+                    class GameSyncBalanceResp implements IGameSyncBalanceResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGameSyncBalanceResp);
+                        public balance: Long;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGameSyncBalanceResp): com.cw.chess2.dragon_tiger.GameSyncBalanceResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GameSyncBalanceResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GameSyncBalanceResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IRecordInfo {
+                        period?: (string|null);
+                        dragonCard?: (number|null);
+                        tigerCard?: (number|null);
+                        result?: (number|null);
+                        wins?: (com.cw.chess2.dragon_tiger.WinnerBalance[]|null);
+                        winlose?: (Long|null);
+                        betTime?: (number|null);
+                    }
+
+                    class RecordInfo implements IRecordInfo {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IRecordInfo);
+                        public period: string;
+                        public dragonCard: number;
+                        public tigerCard: number;
+                        public result: number;
+                        public wins: com.cw.chess2.dragon_tiger.WinnerBalance[];
+                        public winlose: Long;
+                        public betTime: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IRecordInfo): com.cw.chess2.dragon_tiger.RecordInfo;
+                        public static encode(m: com.cw.chess2.dragon_tiger.RecordInfo, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.RecordInfo;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetSelfRecordReq {
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                    }
+
+                    class GetSelfRecordReq implements IGetSelfRecordReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetSelfRecordReq);
+                        public page: number;
+                        public pageSize: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetSelfRecordReq): com.cw.chess2.dragon_tiger.GetSelfRecordReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetSelfRecordReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetSelfRecordReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetSelfRecordResp {
+                        records?: (com.cw.chess2.dragon_tiger.RecordInfo[]|null);
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                        count?: (number|null);
+                        PageCount?: (number|null);
+                    }
+
+                    class GetSelfRecordResp implements IGetSelfRecordResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetSelfRecordResp);
+                        public records: com.cw.chess2.dragon_tiger.RecordInfo[];
+                        public page: number;
+                        public pageSize: number;
+                        public count: number;
+                        public PageCount: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetSelfRecordResp): com.cw.chess2.dragon_tiger.GetSelfRecordResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetSelfRecordResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetSelfRecordResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IDrawInfo {
+                        period?: (string|null);
+                        dragonCard?: (number|null);
+                        tigerCard?: (number|null);
+                        result?: (number|null);
+                        secretKey?: (string|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                    }
+
+                    class DrawInfo implements IDrawInfo {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IDrawInfo);
+                        public period: string;
+                        public dragonCard: number;
+                        public tigerCard: number;
+                        public result: number;
+                        public secretKey: string;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IDrawInfo): com.cw.chess2.dragon_tiger.DrawInfo;
+                        public static encode(m: com.cw.chess2.dragon_tiger.DrawInfo, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.DrawInfo;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawListReq {
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                    }
+
+                    class GetDrawListReq implements IGetDrawListReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetDrawListReq);
+                        public page: number;
+                        public pageSize: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetDrawListReq): com.cw.chess2.dragon_tiger.GetDrawListReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetDrawListReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetDrawListReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawListResp {
+                        records?: (com.cw.chess2.dragon_tiger.DrawInfo[]|null);
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                        count?: (number|null);
+                        PageCount?: (number|null);
+                        dragonNum?: (number|null);
+                        tigerNum?: (number|null);
+                        tieNum?: (number|null);
+                        statisticNum?: (number|null);
+                    }
+
+                    class GetDrawListResp implements IGetDrawListResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetDrawListResp);
+                        public records: com.cw.chess2.dragon_tiger.DrawInfo[];
+                        public page: number;
+                        public pageSize: number;
+                        public count: number;
+                        public PageCount: number;
+                        public dragonNum: number;
+                        public tigerNum: number;
+                        public tieNum: number;
+                        public statisticNum: number;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetDrawListResp): com.cw.chess2.dragon_tiger.GetDrawListResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetDrawListResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetDrawListResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawInfoReq {
+                        period?: (string|null);
+                    }
+
+                    class GetDrawInfoReq implements IGetDrawInfoReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetDrawInfoReq);
+                        public period: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetDrawInfoReq): com.cw.chess2.dragon_tiger.GetDrawInfoReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetDrawInfoReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetDrawInfoReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawInfoResp {
+                        record?: (com.cw.chess2.dragon_tiger.DrawInfo|null);
+                    }
+
+                    class GetDrawInfoResp implements IGetDrawInfoResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IGetDrawInfoResp);
+                        public record?: (com.cw.chess2.dragon_tiger.DrawInfo|null);
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IGetDrawInfoResp): com.cw.chess2.dragon_tiger.GetDrawInfoResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.GetDrawInfoResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.GetDrawInfoResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IMsgChatReq {
+                        tableId?: (number|null);
+                        chatType?: (number|null);
+                        typeValue1?: (string|null);
+                        typeValue2?: (string|null);
+                    }
+
+                    class MsgChatReq implements IMsgChatReq {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IMsgChatReq);
+                        public tableId: number;
+                        public chatType: number;
+                        public typeValue1: string;
+                        public typeValue2: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IMsgChatReq): com.cw.chess2.dragon_tiger.MsgChatReq;
+                        public static encode(m: com.cw.chess2.dragon_tiger.MsgChatReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.MsgChatReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IMsgChatResp {
+                        tableId?: (number|null);
+                        userId?: (number|null);
+                        nickName?: (string|null);
+                        chatType?: (number|null);
+                        typeValue1?: (string|null);
+                        typeValue2?: (string|null);
+                    }
+
+                    class MsgChatResp implements IMsgChatResp {
+                        constructor(p?: com.cw.chess2.dragon_tiger.IMsgChatResp);
+                        public tableId: number;
+                        public userId: number;
+                        public nickName: string;
+                        public chatType: number;
+                        public typeValue1: string;
+                        public typeValue2: string;
+                        public static create(properties?: com.cw.chess2.dragon_tiger.IMsgChatResp): com.cw.chess2.dragon_tiger.MsgChatResp;
+                        public static encode(m: com.cw.chess2.dragon_tiger.MsgChatResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.dragon_tiger.MsgChatResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+                }
             }
         }
     }

@@ -121,9 +121,10 @@ export let AndarBahar_network = {
             page: page,
             pageSize: 15,
         };
+        console.log('请求记录数据=========:[' + JSON.stringify(payload) + ']');
         let message = GameBetReq.create(payload);
         let buffer = GameBetReq.encode(message).finish();
-        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_DROGON_TIGER_, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_SELFRECORD_REQ, buffer);
+        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_SELFRECORD_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
     sendGameHistoryReq(page) {
@@ -132,9 +133,10 @@ export let AndarBahar_network = {
             page: page,
             pageSize: 10,
         };
+        console.log('请求历史记录数据=========:[' + JSON.stringify(payload) + ']');
         let message = GameBetReq.create(payload);
         let buffer = GameBetReq.encode(message).finish();
-        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_DROGON_TIGER_, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_DRAWLIST_REQ, buffer);
+        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_DRAWLIST_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
     // 请求聊天

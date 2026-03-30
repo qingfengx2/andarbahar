@@ -4912,7 +4912,7 @@ export const com = $root.com = (() => {
                         if (m.odds != null && m.odds.length) {
                             w.uint32(50).fork();
                             for (var i = 0; i < m.odds.length; ++i)
-                                w.float(m.odds[i]);
+                                w.uint32(m.odds[i]);
                             w.ldelim();
                         }
                         return w;
@@ -4965,9 +4965,9 @@ export const com = $root.com = (() => {
                                     if ((t & 7) === 2) {
                                         var c2 = r.uint32() + r.pos;
                                         while (r.pos < c2)
-                                            m.odds.push(r.float());
+                                            m.odds.push(r.uint32());
                                     } else
-                                        m.odds.push(r.float());
+                                        m.odds.push(r.uint32());
                                     break;
                                 }
                             default:
@@ -6529,6 +6529,2880 @@ export const com = $root.com = (() => {
                 })();
 
                 return platform;
+            })();
+
+            chess2.dragon_tiger = (function() {
+
+                const dragon_tiger = {};
+
+                dragon_tiger.DragonTigerCmd = (function() {
+                    const valuesById = {}, values = Object.create(valuesById);
+                    values[valuesById[0] = "CMD_C_INVALID"] = 0;
+                    values[valuesById[1] = "CMD_C_GAME_ENTER_REQ"] = 1;
+                    values[valuesById[2] = "CMD_C_GAME_ENTER_RESP"] = 2;
+                    values[valuesById[3] = "CMD_C_GAME_GET_TABLE_STATUS_REQ"] = 3;
+                    values[valuesById[4] = "CMD_C_GAME_GET_TABLE_STATUS_RESP"] = 4;
+                    values[valuesById[5] = "CMD_C_GAME_BET_REQ"] = 5;
+                    values[valuesById[6] = "CMD_C_GAME_BET_RESP"] = 6;
+                    values[valuesById[7] = "CMD_C_GAME_REPEAT_BET_REQ"] = 7;
+                    values[valuesById[8] = "CMD_C_GAME_REPEAT_BET_RESP"] = 8;
+                    values[valuesById[9] = "CMD_C_GAME_LEAVE_REQ"] = 9;
+                    values[valuesById[10] = "CMD_C_GAME_LEAVE_RESP"] = 10;
+                    values[valuesById[12] = "CMD_C_GAME_READY_NOTICE_RESP"] = 12;
+                    values[valuesById[14] = "CMD_C_GAME_START_NOTICE_RESP"] = 14;
+                    values[valuesById[16] = "CMD_C_GAME_BET_NOTICE_RESP"] = 16;
+                    values[valuesById[18] = "CMD_C_GAME_SHOW_RESULT_RESP"] = 18;
+                    values[valuesById[20] = "CMD_C_GAME_SETTLE_NOTICE_RESP"] = 20;
+                    values[valuesById[21] = "CMD_C_GAME_GET_PLAYERS_REQ"] = 21;
+                    values[valuesById[22] = "CMD_C_GAME_GET_PLAYERS_RESP"] = 22;
+                    values[valuesById[24] = "CMD_C_GAME_SYNC_CHAIR_RESP"] = 24;
+                    values[valuesById[26] = "CMD_C_GAME_SYNC_BET_RESP"] = 26;
+                    values[valuesById[28] = "CMD_C_GAME_SYNC_PLAYER_COUNT_RESP"] = 28;
+                    values[valuesById[30] = "CMD_C_GAME_REPEAT_BET_NOTICE_RESP"] = 30;
+                    values[valuesById[32] = "CMD_C_GAME_NO_BET_NOTICE_RESP"] = 32;
+                    values[valuesById[34] = "CMD_C_GAME_SYNC_BALANCE_RESP"] = 34;
+                    values[valuesById[41] = "CMD_C_GAME_GET_SELFRECORD_REQ"] = 41;
+                    values[valuesById[42] = "CMD_C_GAME_GET_SELFRECORD_RESP"] = 42;
+                    values[valuesById[43] = "CMD_C_GAME_GET_DRAWLIST_REQ"] = 43;
+                    values[valuesById[44] = "CMD_C_GAME_GET_DRAWLIST_RESP"] = 44;
+                    values[valuesById[45] = "CMD_C_GAME_GET_DRAWINFO_REQ"] = 45;
+                    values[valuesById[46] = "CMD_C_GAME_GET_DRAWINFO_RESP"] = 46;
+                    values[valuesById[62] = "CMD_C_CHAT_REQ"] = 62;
+                    values[valuesById[63] = "CMD_C_CHAT_RESP"] = 63;
+                    values[valuesById[100] = "CMD_C_GAME_CAN_UPDATE_BALANCE_RESP"] = 100;
+                    return values;
+                })();
+
+                dragon_tiger.GamePhase = (function() {
+                    const valuesById = {}, values = Object.create(valuesById);
+                    values[valuesById[0] = "PHS_INVALID"] = 0;
+                    values[valuesById[1] = "PHS_GAME_READY"] = 1;
+                    values[valuesById[2] = "PHS_GAME_START"] = 2;
+                    values[valuesById[3] = "PHS_GAME_BETTING"] = 3;
+                    values[valuesById[4] = "PHS_GAME_RESULT"] = 4;
+                    values[valuesById[5] = "PHS_GAME_SETTLE"] = 5;
+                    return values;
+                })();
+
+                dragon_tiger.BetData = (function() {
+
+                    function BetData(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    BetData.prototype.index = 0;
+                    BetData.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    BetData.create = function create(properties) {
+                        return new BetData(properties);
+                    };
+
+                    BetData.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.index != null && Object.hasOwnProperty.call(m, "index"))
+                            w.uint32(8).uint32(m.index);
+                        if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
+                            w.uint32(16).int64(m.bet);
+                        return w;
+                    };
+
+                    BetData.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.BetData();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.index = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.bet = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    BetData.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.BetData";
+                    };
+
+                    return BetData;
+                })();
+
+                dragon_tiger.UserBetList = (function() {
+
+                    function UserBetList(p) {
+                        this.bets = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    UserBetList.prototype.userId = 0;
+                    UserBetList.prototype.bets = $util.emptyArray;
+
+                    UserBetList.create = function create(properties) {
+                        return new UserBetList(properties);
+                    };
+
+                    UserBetList.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
+                            w.uint32(8).uint32(m.userId);
+                        if (m.bets != null && m.bets.length) {
+                            for (var i = 0; i < m.bets.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.BetData.encode(m.bets[i], w.uint32(18).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    UserBetList.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.UserBetList();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.userId = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    if (!(m.bets && m.bets.length))
+                                        m.bets = [];
+                                    m.bets.push($root.com.cw.chess2.dragon_tiger.BetData.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    UserBetList.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.UserBetList";
+                    };
+
+                    return UserBetList;
+                })();
+
+                dragon_tiger.ChairStatus = (function() {
+
+                    function ChairStatus(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    ChairStatus.prototype.bUser = 0;
+                    ChairStatus.prototype.chairIndex = 0;
+                    ChairStatus.prototype.user = null;
+
+                    ChairStatus.create = function create(properties) {
+                        return new ChairStatus(properties);
+                    };
+
+                    ChairStatus.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.bUser != null && Object.hasOwnProperty.call(m, "bUser"))
+                            w.uint32(8).uint32(m.bUser);
+                        if (m.chairIndex != null && Object.hasOwnProperty.call(m, "chairIndex"))
+                            w.uint32(16).uint32(m.chairIndex);
+                        if (m.user != null && Object.hasOwnProperty.call(m, "user"))
+                            $root.com.cw.chess2.platform.GameUser.encode(m.user, w.uint32(26).fork()).ldelim();
+                        return w;
+                    };
+
+                    ChairStatus.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.ChairStatus();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.bUser = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.chairIndex = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.user = $root.com.cw.chess2.platform.GameUser.decode(r, r.uint32());
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    ChairStatus.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.ChairStatus";
+                    };
+
+                    return ChairStatus;
+                })();
+
+                dragon_tiger.AreaBet = (function() {
+
+                    function AreaBet(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    AreaBet.prototype.totalBalance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    AreaBet.prototype.ownerBalance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    AreaBet.create = function create(properties) {
+                        return new AreaBet(properties);
+                    };
+
+                    AreaBet.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.totalBalance != null && Object.hasOwnProperty.call(m, "totalBalance"))
+                            w.uint32(8).int64(m.totalBalance);
+                        if (m.ownerBalance != null && Object.hasOwnProperty.call(m, "ownerBalance"))
+                            w.uint32(16).int64(m.ownerBalance);
+                        return w;
+                    };
+
+                    AreaBet.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.AreaBet();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.totalBalance = r.int64();
+                                    break;
+                                }
+                            case 2: {
+                                    m.ownerBalance = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    AreaBet.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.AreaBet";
+                    };
+
+                    return AreaBet;
+                })();
+
+                dragon_tiger.RoadData = (function() {
+
+                    function RoadData(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    RoadData.prototype.winner = 0;
+                    RoadData.prototype.card = 0;
+                    RoadData.prototype.period = "";
+
+                    RoadData.create = function create(properties) {
+                        return new RoadData(properties);
+                    };
+
+                    RoadData.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.winner != null && Object.hasOwnProperty.call(m, "winner"))
+                            w.uint32(8).uint32(m.winner);
+                        if (m.card != null && Object.hasOwnProperty.call(m, "card"))
+                            w.uint32(16).uint32(m.card);
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(26).string(m.period);
+                        return w;
+                    };
+
+                    RoadData.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.RoadData();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.winner = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.card = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    RoadData.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.RoadData";
+                    };
+
+                    return RoadData;
+                })();
+
+                dragon_tiger.GameGetTableStatusReq = (function() {
+
+                    function GameGetTableStatusReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameGetTableStatusReq.create = function create(properties) {
+                        return new GameGetTableStatusReq(properties);
+                    };
+
+                    GameGetTableStatusReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameGetTableStatusReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameGetTableStatusReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameGetTableStatusReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameGetTableStatusReq";
+                    };
+
+                    return GameGetTableStatusReq;
+                })();
+
+                dragon_tiger.GameGetTableStatusResp = (function() {
+
+                    function GameGetTableStatusResp(p) {
+                        this.chairs = [];
+                        this.betList = [];
+                        this.road = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameGetTableStatusResp.prototype.desc = null;
+                    GameGetTableStatusResp.prototype.roundId = "";
+                    GameGetTableStatusResp.prototype.gamePhase = 0;
+                    GameGetTableStatusResp.prototype.timeCount = 0;
+                    GameGetTableStatusResp.prototype.timeLimit = 0;
+                    GameGetTableStatusResp.prototype.chairs = $util.emptyArray;
+                    GameGetTableStatusResp.prototype.self = null;
+                    GameGetTableStatusResp.prototype.dragonBet = null;
+                    GameGetTableStatusResp.prototype.tigerBet = null;
+                    GameGetTableStatusResp.prototype.tieBet = null;
+                    GameGetTableStatusResp.prototype.dragonCard = 0;
+                    GameGetTableStatusResp.prototype.tigerCard = 0;
+                    GameGetTableStatusResp.prototype.betList = $util.emptyArray;
+                    GameGetTableStatusResp.prototype.road = $util.emptyArray;
+                    GameGetTableStatusResp.prototype.repeatBet = 0;
+                    GameGetTableStatusResp.prototype.playerCount = 0;
+                    GameGetTableStatusResp.prototype.winner = 0;
+                    GameGetTableStatusResp.prototype.secretKey = "";
+                    GameGetTableStatusResp.prototype.encryptKey = "";
+                    GameGetTableStatusResp.prototype.encryptResult = "";
+                    GameGetTableStatusResp.prototype.currencyStr = "";
+
+                    GameGetTableStatusResp.create = function create(properties) {
+                        return new GameGetTableStatusResp(properties);
+                    };
+
+                    GameGetTableStatusResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.desc != null && Object.hasOwnProperty.call(m, "desc"))
+                            $root.com.cw.chess2.platform.DragonTigerLevelDesc.encode(m.desc, w.uint32(10).fork()).ldelim();
+                        if (m.roundId != null && Object.hasOwnProperty.call(m, "roundId"))
+                            w.uint32(18).string(m.roundId);
+                        if (m.gamePhase != null && Object.hasOwnProperty.call(m, "gamePhase"))
+                            w.uint32(24).int32(m.gamePhase);
+                        if (m.timeCount != null && Object.hasOwnProperty.call(m, "timeCount"))
+                            w.uint32(32).uint32(m.timeCount);
+                        if (m.timeLimit != null && Object.hasOwnProperty.call(m, "timeLimit"))
+                            w.uint32(40).uint32(m.timeLimit);
+                        if (m.chairs != null && m.chairs.length) {
+                            for (var i = 0; i < m.chairs.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.ChairStatus.encode(m.chairs[i], w.uint32(50).fork()).ldelim();
+                        }
+                        if (m.self != null && Object.hasOwnProperty.call(m, "self"))
+                            $root.com.cw.chess2.platform.GameUser.encode(m.self, w.uint32(58).fork()).ldelim();
+                        if (m.dragonBet != null && Object.hasOwnProperty.call(m, "dragonBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.dragonBet, w.uint32(66).fork()).ldelim();
+                        if (m.tigerBet != null && Object.hasOwnProperty.call(m, "tigerBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.tigerBet, w.uint32(74).fork()).ldelim();
+                        if (m.tieBet != null && Object.hasOwnProperty.call(m, "tieBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.tieBet, w.uint32(82).fork()).ldelim();
+                        if (m.dragonCard != null && Object.hasOwnProperty.call(m, "dragonCard"))
+                            w.uint32(88).uint32(m.dragonCard);
+                        if (m.tigerCard != null && Object.hasOwnProperty.call(m, "tigerCard"))
+                            w.uint32(96).uint32(m.tigerCard);
+                        if (m.betList != null && m.betList.length) {
+                            for (var i = 0; i < m.betList.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.UserBetList.encode(m.betList[i], w.uint32(106).fork()).ldelim();
+                        }
+                        if (m.road != null && m.road.length) {
+                            for (var i = 0; i < m.road.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.RoadData.encode(m.road[i], w.uint32(114).fork()).ldelim();
+                        }
+                        if (m.repeatBet != null && Object.hasOwnProperty.call(m, "repeatBet"))
+                            w.uint32(120).uint32(m.repeatBet);
+                        if (m.playerCount != null && Object.hasOwnProperty.call(m, "playerCount"))
+                            w.uint32(128).uint32(m.playerCount);
+                        if (m.winner != null && Object.hasOwnProperty.call(m, "winner"))
+                            w.uint32(136).uint32(m.winner);
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(146).string(m.secretKey);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(154).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(162).string(m.encryptResult);
+                        if (m.currencyStr != null && Object.hasOwnProperty.call(m, "currencyStr"))
+                            w.uint32(170).string(m.currencyStr);
+                        return w;
+                    };
+
+                    GameGetTableStatusResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameGetTableStatusResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.desc = $root.com.cw.chess2.platform.DragonTigerLevelDesc.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    m.roundId = r.string();
+                                    break;
+                                }
+                            case 3: {
+                                    m.gamePhase = r.int32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.timeCount = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.timeLimit = r.uint32();
+                                    break;
+                                }
+                            case 6: {
+                                    if (!(m.chairs && m.chairs.length))
+                                        m.chairs = [];
+                                    m.chairs.push($root.com.cw.chess2.dragon_tiger.ChairStatus.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 7: {
+                                    m.self = $root.com.cw.chess2.platform.GameUser.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 8: {
+                                    m.dragonBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 9: {
+                                    m.tigerBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 10: {
+                                    m.tieBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 11: {
+                                    m.dragonCard = r.uint32();
+                                    break;
+                                }
+                            case 12: {
+                                    m.tigerCard = r.uint32();
+                                    break;
+                                }
+                            case 13: {
+                                    if (!(m.betList && m.betList.length))
+                                        m.betList = [];
+                                    m.betList.push($root.com.cw.chess2.dragon_tiger.UserBetList.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 14: {
+                                    if (!(m.road && m.road.length))
+                                        m.road = [];
+                                    m.road.push($root.com.cw.chess2.dragon_tiger.RoadData.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 15: {
+                                    m.repeatBet = r.uint32();
+                                    break;
+                                }
+                            case 16: {
+                                    m.playerCount = r.uint32();
+                                    break;
+                                }
+                            case 17: {
+                                    m.winner = r.uint32();
+                                    break;
+                                }
+                            case 18: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 19: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 20: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            case 21: {
+                                    m.currencyStr = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameGetTableStatusResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameGetTableStatusResp";
+                    };
+
+                    return GameGetTableStatusResp;
+                })();
+
+                dragon_tiger.GameGetTableEmptyResp = (function() {
+
+                    function GameGetTableEmptyResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameGetTableEmptyResp.create = function create(properties) {
+                        return new GameGetTableEmptyResp(properties);
+                    };
+
+                    GameGetTableEmptyResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameGetTableEmptyResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameGetTableEmptyResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameGetTableEmptyResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameGetTableEmptyResp";
+                    };
+
+                    return GameGetTableEmptyResp;
+                })();
+
+                dragon_tiger.GameEnterReq = (function() {
+
+                    function GameEnterReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameEnterReq.create = function create(properties) {
+                        return new GameEnterReq(properties);
+                    };
+
+                    GameEnterReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameEnterReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameEnterReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameEnterReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameEnterReq";
+                    };
+
+                    return GameEnterReq;
+                })();
+
+                dragon_tiger.GameEnterResp = (function() {
+
+                    function GameEnterResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameEnterResp.prototype.result = 0;
+
+                    GameEnterResp.create = function create(properties) {
+                        return new GameEnterResp(properties);
+                    };
+
+                    GameEnterResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(8).uint32(m.result);
+                        return w;
+                    };
+
+                    GameEnterResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameEnterResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameEnterResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameEnterResp";
+                    };
+
+                    return GameEnterResp;
+                })();
+
+                dragon_tiger.GameBetReq = (function() {
+
+                    function GameBetReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameBetReq.prototype.index = 0;
+                    GameBetReq.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    GameBetReq.create = function create(properties) {
+                        return new GameBetReq(properties);
+                    };
+
+                    GameBetReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.index != null && Object.hasOwnProperty.call(m, "index"))
+                            w.uint32(8).uint32(m.index);
+                        if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
+                            w.uint32(16).int64(m.bet);
+                        return w;
+                    };
+
+                    GameBetReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameBetReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.index = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.bet = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameBetReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameBetReq";
+                    };
+
+                    return GameBetReq;
+                })();
+
+                dragon_tiger.GameBetResp = (function() {
+
+                    function GameBetResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameBetResp.prototype.result = 0;
+                    GameBetResp.prototype.index = 0;
+                    GameBetResp.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.myBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.totalBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    GameBetResp.create = function create(properties) {
+                        return new GameBetResp(properties);
+                    };
+
+                    GameBetResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(8).uint32(m.result);
+                        if (m.index != null && Object.hasOwnProperty.call(m, "index"))
+                            w.uint32(16).uint32(m.index);
+                        if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
+                            w.uint32(24).int64(m.bet);
+                        if (m.myBet != null && Object.hasOwnProperty.call(m, "myBet"))
+                            w.uint32(32).int64(m.myBet);
+                        if (m.totalBet != null && Object.hasOwnProperty.call(m, "totalBet"))
+                            w.uint32(40).int64(m.totalBet);
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(48).int64(m.balance);
+                        return w;
+                    };
+
+                    GameBetResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameBetResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.index = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.bet = r.int64();
+                                    break;
+                                }
+                            case 4: {
+                                    m.myBet = r.int64();
+                                    break;
+                                }
+                            case 5: {
+                                    m.totalBet = r.int64();
+                                    break;
+                                }
+                            case 6: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameBetResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameBetResp";
+                    };
+
+                    return GameBetResp;
+                })();
+
+                dragon_tiger.GameBettingNotify = (function() {
+
+                    function GameBettingNotify(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameBettingNotify.prototype.index = 0;
+                    GameBettingNotify.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBettingNotify.prototype.totalBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBettingNotify.prototype.userId = 0;
+                    GameBettingNotify.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    GameBettingNotify.create = function create(properties) {
+                        return new GameBettingNotify(properties);
+                    };
+
+                    GameBettingNotify.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.index != null && Object.hasOwnProperty.call(m, "index"))
+                            w.uint32(8).uint32(m.index);
+                        if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
+                            w.uint32(16).int64(m.bet);
+                        if (m.totalBet != null && Object.hasOwnProperty.call(m, "totalBet"))
+                            w.uint32(24).int64(m.totalBet);
+                        if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
+                            w.uint32(32).uint32(m.userId);
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(40).int64(m.balance);
+                        return w;
+                    };
+
+                    GameBettingNotify.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameBettingNotify();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.index = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.bet = r.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    m.totalBet = r.int64();
+                                    break;
+                                }
+                            case 4: {
+                                    m.userId = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameBettingNotify.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameBettingNotify";
+                    };
+
+                    return GameBettingNotify;
+                })();
+
+                dragon_tiger.GameRepeatBetReq = (function() {
+
+                    function GameRepeatBetReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameRepeatBetReq.create = function create(properties) {
+                        return new GameRepeatBetReq(properties);
+                    };
+
+                    GameRepeatBetReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameRepeatBetReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameRepeatBetReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameRepeatBetReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameRepeatBetReq";
+                    };
+
+                    return GameRepeatBetReq;
+                })();
+
+                dragon_tiger.GameRepeatBetNoticeResp = (function() {
+
+                    function GameRepeatBetNoticeResp(p) {
+                        this.list = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameRepeatBetNoticeResp.prototype.userId = 0;
+                    GameRepeatBetNoticeResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameRepeatBetNoticeResp.prototype.totalDragonBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameRepeatBetNoticeResp.prototype.totalTigerBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameRepeatBetNoticeResp.prototype.totalTieBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameRepeatBetNoticeResp.prototype.list = $util.emptyArray;
+
+                    GameRepeatBetNoticeResp.create = function create(properties) {
+                        return new GameRepeatBetNoticeResp(properties);
+                    };
+
+                    GameRepeatBetNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
+                            w.uint32(8).uint32(m.userId);
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(16).int64(m.balance);
+                        if (m.totalDragonBet != null && Object.hasOwnProperty.call(m, "totalDragonBet"))
+                            w.uint32(24).int64(m.totalDragonBet);
+                        if (m.totalTigerBet != null && Object.hasOwnProperty.call(m, "totalTigerBet"))
+                            w.uint32(32).int64(m.totalTigerBet);
+                        if (m.totalTieBet != null && Object.hasOwnProperty.call(m, "totalTieBet"))
+                            w.uint32(40).int64(m.totalTieBet);
+                        if (m.list != null && m.list.length) {
+                            for (var i = 0; i < m.list.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.BetData.encode(m.list[i], w.uint32(50).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    GameRepeatBetNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameRepeatBetNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.userId = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    m.totalDragonBet = r.int64();
+                                    break;
+                                }
+                            case 4: {
+                                    m.totalTigerBet = r.int64();
+                                    break;
+                                }
+                            case 5: {
+                                    m.totalTieBet = r.int64();
+                                    break;
+                                }
+                            case 6: {
+                                    if (!(m.list && m.list.length))
+                                        m.list = [];
+                                    m.list.push($root.com.cw.chess2.dragon_tiger.BetData.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameRepeatBetNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameRepeatBetNoticeResp";
+                    };
+
+                    return GameRepeatBetNoticeResp;
+                })();
+
+                dragon_tiger.GameRepeatBetResp = (function() {
+
+                    function GameRepeatBetResp(p) {
+                        this.list = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameRepeatBetResp.prototype.result = 0;
+                    GameRepeatBetResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameRepeatBetResp.prototype.dragonBet = null;
+                    GameRepeatBetResp.prototype.tigerBet = null;
+                    GameRepeatBetResp.prototype.tieBet = null;
+                    GameRepeatBetResp.prototype.list = $util.emptyArray;
+
+                    GameRepeatBetResp.create = function create(properties) {
+                        return new GameRepeatBetResp(properties);
+                    };
+
+                    GameRepeatBetResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(8).uint32(m.result);
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(16).int64(m.balance);
+                        if (m.dragonBet != null && Object.hasOwnProperty.call(m, "dragonBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.dragonBet, w.uint32(26).fork()).ldelim();
+                        if (m.tigerBet != null && Object.hasOwnProperty.call(m, "tigerBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.tigerBet, w.uint32(34).fork()).ldelim();
+                        if (m.tieBet != null && Object.hasOwnProperty.call(m, "tieBet"))
+                            $root.com.cw.chess2.dragon_tiger.AreaBet.encode(m.tieBet, w.uint32(42).fork()).ldelim();
+                        if (m.list != null && m.list.length) {
+                            for (var i = 0; i < m.list.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.BetData.encode(m.list[i], w.uint32(50).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    GameRepeatBetResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameRepeatBetResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    m.dragonBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 4: {
+                                    m.tigerBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 5: {
+                                    m.tieBet = $root.com.cw.chess2.dragon_tiger.AreaBet.decode(r, r.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    if (!(m.list && m.list.length))
+                                        m.list = [];
+                                    m.list.push($root.com.cw.chess2.dragon_tiger.BetData.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameRepeatBetResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameRepeatBetResp";
+                    };
+
+                    return GameRepeatBetResp;
+                })();
+
+                dragon_tiger.GameLeaveReq = (function() {
+
+                    function GameLeaveReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameLeaveReq.create = function create(properties) {
+                        return new GameLeaveReq(properties);
+                    };
+
+                    GameLeaveReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameLeaveReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameLeaveReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameLeaveReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameLeaveReq";
+                    };
+
+                    return GameLeaveReq;
+                })();
+
+                dragon_tiger.GameLeaveResp = (function() {
+
+                    function GameLeaveResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameLeaveResp.prototype.result = 0;
+
+                    GameLeaveResp.create = function create(properties) {
+                        return new GameLeaveResp(properties);
+                    };
+
+                    GameLeaveResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(8).uint32(m.result);
+                        return w;
+                    };
+
+                    GameLeaveResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameLeaveResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameLeaveResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameLeaveResp";
+                    };
+
+                    return GameLeaveResp;
+                })();
+
+                dragon_tiger.GameReadyNoticeResp = (function() {
+
+                    function GameReadyNoticeResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameReadyNoticeResp.create = function create(properties) {
+                        return new GameReadyNoticeResp(properties);
+                    };
+
+                    GameReadyNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameReadyNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameReadyNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameReadyNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameReadyNoticeResp";
+                    };
+
+                    return GameReadyNoticeResp;
+                })();
+
+                dragon_tiger.GameStartNoticeResp = (function() {
+
+                    function GameStartNoticeResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameStartNoticeResp.create = function create(properties) {
+                        return new GameStartNoticeResp(properties);
+                    };
+
+                    GameStartNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        return w;
+                    };
+
+                    GameStartNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameStartNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameStartNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameStartNoticeResp";
+                    };
+
+                    return GameStartNoticeResp;
+                })();
+
+                dragon_tiger.GameBetNoticeResp = (function() {
+
+                    function GameBetNoticeResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameBetNoticeResp.prototype.count = 0;
+                    GameBetNoticeResp.prototype.repeatBet = 0;
+                    GameBetNoticeResp.prototype.encryptKey = "";
+                    GameBetNoticeResp.prototype.encryptResult = "";
+                    GameBetNoticeResp.prototype.period = "";
+
+                    GameBetNoticeResp.create = function create(properties) {
+                        return new GameBetNoticeResp(properties);
+                    };
+
+                    GameBetNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(8).uint32(m.count);
+                        if (m.repeatBet != null && Object.hasOwnProperty.call(m, "repeatBet"))
+                            w.uint32(16).uint32(m.repeatBet);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(26).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(34).string(m.encryptResult);
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(42).string(m.period);
+                        return w;
+                    };
+
+                    GameBetNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameBetNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.repeatBet = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 4: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            case 5: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameBetNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameBetNoticeResp";
+                    };
+
+                    return GameBetNoticeResp;
+                })();
+
+                dragon_tiger.GameResultResp = (function() {
+
+                    function GameResultResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameResultResp.prototype.dragonCard = 0;
+                    GameResultResp.prototype.tigerCard = 0;
+                    GameResultResp.prototype.winner = 0;
+                    GameResultResp.prototype.secretKey = "";
+                    GameResultResp.prototype.period = "";
+
+                    GameResultResp.create = function create(properties) {
+                        return new GameResultResp(properties);
+                    };
+
+                    GameResultResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.dragonCard != null && Object.hasOwnProperty.call(m, "dragonCard"))
+                            w.uint32(8).uint32(m.dragonCard);
+                        if (m.tigerCard != null && Object.hasOwnProperty.call(m, "tigerCard"))
+                            w.uint32(16).uint32(m.tigerCard);
+                        if (m.winner != null && Object.hasOwnProperty.call(m, "winner"))
+                            w.uint32(24).uint32(m.winner);
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(34).string(m.secretKey);
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(42).string(m.period);
+                        return w;
+                    };
+
+                    GameResultResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameResultResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.dragonCard = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.tigerCard = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.winner = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 5: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameResultResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameResultResp";
+                    };
+
+                    return GameResultResp;
+                })();
+
+                dragon_tiger.WinnerBalance = (function() {
+
+                    function WinnerBalance(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    WinnerBalance.prototype.index = 0;
+                    WinnerBalance.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    WinnerBalance.prototype.bets = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    WinnerBalance.create = function create(properties) {
+                        return new WinnerBalance(properties);
+                    };
+
+                    WinnerBalance.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.index != null && Object.hasOwnProperty.call(m, "index"))
+                            w.uint32(8).uint32(m.index);
+                        if (m.amount != null && Object.hasOwnProperty.call(m, "amount"))
+                            w.uint32(16).int64(m.amount);
+                        if (m.bets != null && Object.hasOwnProperty.call(m, "bets"))
+                            w.uint32(24).int64(m.bets);
+                        return w;
+                    };
+
+                    WinnerBalance.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.WinnerBalance();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.index = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.amount = r.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    m.bets = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    WinnerBalance.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.WinnerBalance";
+                    };
+
+                    return WinnerBalance;
+                })();
+
+                dragon_tiger.WinnerData = (function() {
+
+                    function WinnerData(p) {
+                        this.wins = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    WinnerData.prototype.userId = 0;
+                    WinnerData.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    WinnerData.prototype.wins = $util.emptyArray;
+
+                    WinnerData.create = function create(properties) {
+                        return new WinnerData(properties);
+                    };
+
+                    WinnerData.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
+                            w.uint32(8).uint32(m.userId);
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(16).int64(m.balance);
+                        if (m.wins != null && m.wins.length) {
+                            for (var i = 0; i < m.wins.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.WinnerBalance.encode(m.wins[i], w.uint32(26).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    WinnerData.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.WinnerData();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.userId = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    if (!(m.wins && m.wins.length))
+                                        m.wins = [];
+                                    m.wins.push($root.com.cw.chess2.dragon_tiger.WinnerBalance.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    WinnerData.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.WinnerData";
+                    };
+
+                    return WinnerData;
+                })();
+
+                dragon_tiger.GameWinNoticeResp = (function() {
+
+                    function GameWinNoticeResp(p) {
+                        this.winners = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameWinNoticeResp.prototype.winners = $util.emptyArray;
+
+                    GameWinNoticeResp.create = function create(properties) {
+                        return new GameWinNoticeResp(properties);
+                    };
+
+                    GameWinNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.winners != null && m.winners.length) {
+                            for (var i = 0; i < m.winners.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.WinnerData.encode(m.winners[i], w.uint32(10).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    GameWinNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameWinNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.winners && m.winners.length))
+                                        m.winners = [];
+                                    m.winners.push($root.com.cw.chess2.dragon_tiger.WinnerData.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameWinNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameWinNoticeResp";
+                    };
+
+                    return GameWinNoticeResp;
+                })();
+
+                dragon_tiger.GameGetPlayersReq = (function() {
+
+                    function GameGetPlayersReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameGetPlayersReq.prototype.page = 0;
+
+                    GameGetPlayersReq.create = function create(properties) {
+                        return new GameGetPlayersReq(properties);
+                    };
+
+                    GameGetPlayersReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(8).uint32(m.page);
+                        return w;
+                    };
+
+                    GameGetPlayersReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameGetPlayersReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameGetPlayersReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameGetPlayersReq";
+                    };
+
+                    return GameGetPlayersReq;
+                })();
+
+                dragon_tiger.GameGetPlayersResp = (function() {
+
+                    function GameGetPlayersResp(p) {
+                        this.users = [];
+                        this.winUsers = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameGetPlayersResp.prototype.users = $util.emptyArray;
+                    GameGetPlayersResp.prototype.winUsers = $util.emptyArray;
+                    GameGetPlayersResp.prototype.page = 0;
+                    GameGetPlayersResp.prototype.count = 0;
+
+                    GameGetPlayersResp.create = function create(properties) {
+                        return new GameGetPlayersResp(properties);
+                    };
+
+                    GameGetPlayersResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.users != null && m.users.length) {
+                            for (var i = 0; i < m.users.length; ++i)
+                                $root.com.cw.chess2.platform.GameUser.encode(m.users[i], w.uint32(10).fork()).ldelim();
+                        }
+                        if (m.winUsers != null && m.winUsers.length) {
+                            for (var i = 0; i < m.winUsers.length; ++i)
+                                $root.com.cw.chess2.platform.GameUser.encode(m.winUsers[i], w.uint32(18).fork()).ldelim();
+                        }
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(24).uint32(m.page);
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(32).uint32(m.count);
+                        return w;
+                    };
+
+                    GameGetPlayersResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameGetPlayersResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.users && m.users.length))
+                                        m.users = [];
+                                    m.users.push($root.com.cw.chess2.platform.GameUser.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 2: {
+                                    if (!(m.winUsers && m.winUsers.length))
+                                        m.winUsers = [];
+                                    m.winUsers.push($root.com.cw.chess2.platform.GameUser.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 3: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameGetPlayersResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameGetPlayersResp";
+                    };
+
+                    return GameGetPlayersResp;
+                })();
+
+                dragon_tiger.GameSyncChairResp = (function() {
+
+                    function GameSyncChairResp(p) {
+                        this.chairs = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameSyncChairResp.prototype.chairs = $util.emptyArray;
+
+                    GameSyncChairResp.create = function create(properties) {
+                        return new GameSyncChairResp(properties);
+                    };
+
+                    GameSyncChairResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.chairs != null && m.chairs.length) {
+                            for (var i = 0; i < m.chairs.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.ChairStatus.encode(m.chairs[i], w.uint32(10).fork()).ldelim();
+                        }
+                        return w;
+                    };
+
+                    GameSyncChairResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameSyncChairResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.chairs && m.chairs.length))
+                                        m.chairs = [];
+                                    m.chairs.push($root.com.cw.chess2.dragon_tiger.ChairStatus.decode(r, r.uint32()));
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameSyncChairResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameSyncChairResp";
+                    };
+
+                    return GameSyncChairResp;
+                })();
+
+                dragon_tiger.GameSyncPlayerCountResp = (function() {
+
+                    function GameSyncPlayerCountResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameSyncPlayerCountResp.prototype.count = 0;
+
+                    GameSyncPlayerCountResp.create = function create(properties) {
+                        return new GameSyncPlayerCountResp(properties);
+                    };
+
+                    GameSyncPlayerCountResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(8).uint32(m.count);
+                        return w;
+                    };
+
+                    GameSyncPlayerCountResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameSyncPlayerCountResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameSyncPlayerCountResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameSyncPlayerCountResp";
+                    };
+
+                    return GameSyncPlayerCountResp;
+                })();
+
+                dragon_tiger.GameNoBetNoticeResp = (function() {
+
+                    function GameNoBetNoticeResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameNoBetNoticeResp.prototype.count = 0;
+
+                    GameNoBetNoticeResp.create = function create(properties) {
+                        return new GameNoBetNoticeResp(properties);
+                    };
+
+                    GameNoBetNoticeResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(8).uint32(m.count);
+                        return w;
+                    };
+
+                    GameNoBetNoticeResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameNoBetNoticeResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameNoBetNoticeResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameNoBetNoticeResp";
+                    };
+
+                    return GameNoBetNoticeResp;
+                })();
+
+                dragon_tiger.GameSyncBalanceResp = (function() {
+
+                    function GameSyncBalanceResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GameSyncBalanceResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+                    GameSyncBalanceResp.create = function create(properties) {
+                        return new GameSyncBalanceResp(properties);
+                    };
+
+                    GameSyncBalanceResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
+                            w.uint32(8).int64(m.balance);
+                        return w;
+                    };
+
+                    GameSyncBalanceResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GameSyncBalanceResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.balance = r.int64();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GameSyncBalanceResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GameSyncBalanceResp";
+                    };
+
+                    return GameSyncBalanceResp;
+                })();
+
+                dragon_tiger.RecordInfo = (function() {
+
+                    function RecordInfo(p) {
+                        this.wins = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    RecordInfo.prototype.period = "";
+                    RecordInfo.prototype.dragonCard = 0;
+                    RecordInfo.prototype.tigerCard = 0;
+                    RecordInfo.prototype.result = 0;
+                    RecordInfo.prototype.wins = $util.emptyArray;
+                    RecordInfo.prototype.winlose = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    RecordInfo.prototype.betTime = 0;
+
+                    RecordInfo.create = function create(properties) {
+                        return new RecordInfo(properties);
+                    };
+
+                    RecordInfo.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        if (m.dragonCard != null && Object.hasOwnProperty.call(m, "dragonCard"))
+                            w.uint32(16).uint32(m.dragonCard);
+                        if (m.tigerCard != null && Object.hasOwnProperty.call(m, "tigerCard"))
+                            w.uint32(24).uint32(m.tigerCard);
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(32).uint32(m.result);
+                        if (m.wins != null && m.wins.length) {
+                            for (var i = 0; i < m.wins.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.WinnerBalance.encode(m.wins[i], w.uint32(42).fork()).ldelim();
+                        }
+                        if (m.winlose != null && Object.hasOwnProperty.call(m, "winlose"))
+                            w.uint32(48).int64(m.winlose);
+                        if (m.betTime != null && Object.hasOwnProperty.call(m, "betTime"))
+                            w.uint32(56).uint32(m.betTime);
+                        return w;
+                    };
+
+                    RecordInfo.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.RecordInfo();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            case 2: {
+                                    m.dragonCard = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.tigerCard = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    if (!(m.wins && m.wins.length))
+                                        m.wins = [];
+                                    m.wins.push($root.com.cw.chess2.dragon_tiger.WinnerBalance.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 6: {
+                                    m.winlose = r.int64();
+                                    break;
+                                }
+                            case 7: {
+                                    m.betTime = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    RecordInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.RecordInfo";
+                    };
+
+                    return RecordInfo;
+                })();
+
+                dragon_tiger.GetSelfRecordReq = (function() {
+
+                    function GetSelfRecordReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetSelfRecordReq.prototype.page = 0;
+                    GetSelfRecordReq.prototype.pageSize = 0;
+
+                    GetSelfRecordReq.create = function create(properties) {
+                        return new GetSelfRecordReq(properties);
+                    };
+
+                    GetSelfRecordReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(8).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(16).uint32(m.pageSize);
+                        return w;
+                    };
+
+                    GetSelfRecordReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetSelfRecordReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetSelfRecordReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetSelfRecordReq";
+                    };
+
+                    return GetSelfRecordReq;
+                })();
+
+                dragon_tiger.GetSelfRecordResp = (function() {
+
+                    function GetSelfRecordResp(p) {
+                        this.records = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetSelfRecordResp.prototype.records = $util.emptyArray;
+                    GetSelfRecordResp.prototype.page = 0;
+                    GetSelfRecordResp.prototype.pageSize = 0;
+                    GetSelfRecordResp.prototype.count = 0;
+                    GetSelfRecordResp.prototype.PageCount = 0;
+
+                    GetSelfRecordResp.create = function create(properties) {
+                        return new GetSelfRecordResp(properties);
+                    };
+
+                    GetSelfRecordResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.records != null && m.records.length) {
+                            for (var i = 0; i < m.records.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.RecordInfo.encode(m.records[i], w.uint32(10).fork()).ldelim();
+                        }
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(16).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(24).uint32(m.pageSize);
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(32).uint32(m.count);
+                        if (m.PageCount != null && Object.hasOwnProperty.call(m, "PageCount"))
+                            w.uint32(40).uint32(m.PageCount);
+                        return w;
+                    };
+
+                    GetSelfRecordResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetSelfRecordResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.records && m.records.length))
+                                        m.records = [];
+                                    m.records.push($root.com.cw.chess2.dragon_tiger.RecordInfo.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 2: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.PageCount = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetSelfRecordResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetSelfRecordResp";
+                    };
+
+                    return GetSelfRecordResp;
+                })();
+
+                dragon_tiger.DrawInfo = (function() {
+
+                    function DrawInfo(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    DrawInfo.prototype.period = "";
+                    DrawInfo.prototype.dragonCard = 0;
+                    DrawInfo.prototype.tigerCard = 0;
+                    DrawInfo.prototype.result = 0;
+                    DrawInfo.prototype.secretKey = "";
+                    DrawInfo.prototype.encryptKey = "";
+                    DrawInfo.prototype.encryptResult = "";
+
+                    DrawInfo.create = function create(properties) {
+                        return new DrawInfo(properties);
+                    };
+
+                    DrawInfo.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        if (m.dragonCard != null && Object.hasOwnProperty.call(m, "dragonCard"))
+                            w.uint32(16).uint32(m.dragonCard);
+                        if (m.tigerCard != null && Object.hasOwnProperty.call(m, "tigerCard"))
+                            w.uint32(24).uint32(m.tigerCard);
+                        if (m.result != null && Object.hasOwnProperty.call(m, "result"))
+                            w.uint32(32).uint32(m.result);
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(42).string(m.secretKey);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(50).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(58).string(m.encryptResult);
+                        return w;
+                    };
+
+                    DrawInfo.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.DrawInfo();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            case 2: {
+                                    m.dragonCard = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.tigerCard = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.result = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 6: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 7: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    DrawInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.DrawInfo";
+                    };
+
+                    return DrawInfo;
+                })();
+
+                dragon_tiger.GetDrawListReq = (function() {
+
+                    function GetDrawListReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawListReq.prototype.page = 0;
+                    GetDrawListReq.prototype.pageSize = 0;
+
+                    GetDrawListReq.create = function create(properties) {
+                        return new GetDrawListReq(properties);
+                    };
+
+                    GetDrawListReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(8).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(16).uint32(m.pageSize);
+                        return w;
+                    };
+
+                    GetDrawListReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetDrawListReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawListReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetDrawListReq";
+                    };
+
+                    return GetDrawListReq;
+                })();
+
+                dragon_tiger.GetDrawListResp = (function() {
+
+                    function GetDrawListResp(p) {
+                        this.records = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawListResp.prototype.records = $util.emptyArray;
+                    GetDrawListResp.prototype.page = 0;
+                    GetDrawListResp.prototype.pageSize = 0;
+                    GetDrawListResp.prototype.count = 0;
+                    GetDrawListResp.prototype.PageCount = 0;
+                    GetDrawListResp.prototype.dragonNum = 0;
+                    GetDrawListResp.prototype.tigerNum = 0;
+                    GetDrawListResp.prototype.tieNum = 0;
+                    GetDrawListResp.prototype.statisticNum = 0;
+
+                    GetDrawListResp.create = function create(properties) {
+                        return new GetDrawListResp(properties);
+                    };
+
+                    GetDrawListResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.records != null && m.records.length) {
+                            for (var i = 0; i < m.records.length; ++i)
+                                $root.com.cw.chess2.dragon_tiger.DrawInfo.encode(m.records[i], w.uint32(10).fork()).ldelim();
+                        }
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(16).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(24).uint32(m.pageSize);
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(32).uint32(m.count);
+                        if (m.PageCount != null && Object.hasOwnProperty.call(m, "PageCount"))
+                            w.uint32(40).uint32(m.PageCount);
+                        if (m.dragonNum != null && Object.hasOwnProperty.call(m, "dragonNum"))
+                            w.uint32(48).uint32(m.dragonNum);
+                        if (m.tigerNum != null && Object.hasOwnProperty.call(m, "tigerNum"))
+                            w.uint32(56).uint32(m.tigerNum);
+                        if (m.tieNum != null && Object.hasOwnProperty.call(m, "tieNum"))
+                            w.uint32(64).uint32(m.tieNum);
+                        if (m.statisticNum != null && Object.hasOwnProperty.call(m, "statisticNum"))
+                            w.uint32(72).uint32(m.statisticNum);
+                        return w;
+                    };
+
+                    GetDrawListResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetDrawListResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.records && m.records.length))
+                                        m.records = [];
+                                    m.records.push($root.com.cw.chess2.dragon_tiger.DrawInfo.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 2: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.PageCount = r.uint32();
+                                    break;
+                                }
+                            case 6: {
+                                    m.dragonNum = r.uint32();
+                                    break;
+                                }
+                            case 7: {
+                                    m.tigerNum = r.uint32();
+                                    break;
+                                }
+                            case 8: {
+                                    m.tieNum = r.uint32();
+                                    break;
+                                }
+                            case 9: {
+                                    m.statisticNum = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawListResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetDrawListResp";
+                    };
+
+                    return GetDrawListResp;
+                })();
+
+                dragon_tiger.GetDrawInfoReq = (function() {
+
+                    function GetDrawInfoReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawInfoReq.prototype.period = "";
+
+                    GetDrawInfoReq.create = function create(properties) {
+                        return new GetDrawInfoReq(properties);
+                    };
+
+                    GetDrawInfoReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        return w;
+                    };
+
+                    GetDrawInfoReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetDrawInfoReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawInfoReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetDrawInfoReq";
+                    };
+
+                    return GetDrawInfoReq;
+                })();
+
+                dragon_tiger.GetDrawInfoResp = (function() {
+
+                    function GetDrawInfoResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawInfoResp.prototype.record = null;
+
+                    GetDrawInfoResp.create = function create(properties) {
+                        return new GetDrawInfoResp(properties);
+                    };
+
+                    GetDrawInfoResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.record != null && Object.hasOwnProperty.call(m, "record"))
+                            $root.com.cw.chess2.dragon_tiger.DrawInfo.encode(m.record, w.uint32(10).fork()).ldelim();
+                        return w;
+                    };
+
+                    GetDrawInfoResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.GetDrawInfoResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.record = $root.com.cw.chess2.dragon_tiger.DrawInfo.decode(r, r.uint32());
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawInfoResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.GetDrawInfoResp";
+                    };
+
+                    return GetDrawInfoResp;
+                })();
+
+                dragon_tiger.MsgChatReq = (function() {
+
+                    function MsgChatReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    MsgChatReq.prototype.tableId = 0;
+                    MsgChatReq.prototype.chatType = 0;
+                    MsgChatReq.prototype.typeValue1 = "";
+                    MsgChatReq.prototype.typeValue2 = "";
+
+                    MsgChatReq.create = function create(properties) {
+                        return new MsgChatReq(properties);
+                    };
+
+                    MsgChatReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.tableId != null && Object.hasOwnProperty.call(m, "tableId"))
+                            w.uint32(8).uint32(m.tableId);
+                        if (m.chatType != null && Object.hasOwnProperty.call(m, "chatType"))
+                            w.uint32(16).uint32(m.chatType);
+                        if (m.typeValue1 != null && Object.hasOwnProperty.call(m, "typeValue1"))
+                            w.uint32(26).string(m.typeValue1);
+                        if (m.typeValue2 != null && Object.hasOwnProperty.call(m, "typeValue2"))
+                            w.uint32(34).string(m.typeValue2);
+                        return w;
+                    };
+
+                    MsgChatReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.MsgChatReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.tableId = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.chatType = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.typeValue1 = r.string();
+                                    break;
+                                }
+                            case 4: {
+                                    m.typeValue2 = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    MsgChatReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.MsgChatReq";
+                    };
+
+                    return MsgChatReq;
+                })();
+
+                dragon_tiger.MsgChatResp = (function() {
+
+                    function MsgChatResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    MsgChatResp.prototype.tableId = 0;
+                    MsgChatResp.prototype.userId = 0;
+                    MsgChatResp.prototype.nickName = "";
+                    MsgChatResp.prototype.chatType = 0;
+                    MsgChatResp.prototype.typeValue1 = "";
+                    MsgChatResp.prototype.typeValue2 = "";
+
+                    MsgChatResp.create = function create(properties) {
+                        return new MsgChatResp(properties);
+                    };
+
+                    MsgChatResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.tableId != null && Object.hasOwnProperty.call(m, "tableId"))
+                            w.uint32(8).uint32(m.tableId);
+                        if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
+                            w.uint32(16).uint32(m.userId);
+                        if (m.nickName != null && Object.hasOwnProperty.call(m, "nickName"))
+                            w.uint32(26).string(m.nickName);
+                        if (m.chatType != null && Object.hasOwnProperty.call(m, "chatType"))
+                            w.uint32(32).uint32(m.chatType);
+                        if (m.typeValue1 != null && Object.hasOwnProperty.call(m, "typeValue1"))
+                            w.uint32(42).string(m.typeValue1);
+                        if (m.typeValue2 != null && Object.hasOwnProperty.call(m, "typeValue2"))
+                            w.uint32(50).string(m.typeValue2);
+                        return w;
+                    };
+
+                    MsgChatResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.dragon_tiger.MsgChatResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.tableId = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.userId = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.nickName = r.string();
+                                    break;
+                                }
+                            case 4: {
+                                    m.chatType = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.typeValue1 = r.string();
+                                    break;
+                                }
+                            case 6: {
+                                    m.typeValue2 = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    MsgChatResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.dragon_tiger.MsgChatResp";
+                    };
+
+                    return MsgChatResp;
+                })();
+
+                return dragon_tiger;
             })();
 
             return chess2;

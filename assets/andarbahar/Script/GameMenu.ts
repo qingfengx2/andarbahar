@@ -5,6 +5,9 @@ import { AndarBahar_network } from './AndarBahar_network';
 // import { bet_history } from './bet_history';
 import { music } from './AndarbaharMusic';
 import { AndarbaharManager } from './AndarbaharManager';
+import { historyView } from './historyView';
+
+import { betHistoryView } from './betHistoryView';
 @ccclass('GameMenu')
 export class GameMenu extends Component {
 
@@ -122,20 +125,20 @@ export class GameMenu extends Component {
     }
 
     openBetHistoryPanel(data) {
-        // AndarbaharManager.instance.openPanel('prefab/bet_history', (panelNode) => {
-        //     const betHistoryPanel = panelNode.getComponent(bet_history);
-        //     if (betHistoryPanel) {
-        //         betHistoryPanel.initData(data);
-        //     }
-        // });
+        AndarbaharManager.instance.openPanel('prefab/betHistoryView', (panelNode) => {
+            const betHistoryPanel = panelNode.getComponent(betHistoryView);
+            if (betHistoryPanel) {
+                betHistoryPanel.initData(data);
+            }
+        });
     }
     openHistoryPanel(data) {
-        // AndarbaharManager.instance.openPanel('prefab/history', (panelNode) => {
-        //     const historyPanel = panelNode.getComponent(history_panel);
-        //     if (historyPanel) {
-        //         historyPanel.initData(data);
-        //     }
-        // });
+        AndarbaharManager.instance.openPanel('prefab/historyView', (panelNode) => {
+            const historyPanel = panelNode.getComponent(historyView);
+            if (historyPanel) {
+                historyPanel.initData(data);
+            }
+        });
     }
     onClickHistory() {
         music.playMusic(music.Click);

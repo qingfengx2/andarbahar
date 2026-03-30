@@ -43,7 +43,7 @@ export let config = {
     //privacyUrl: "http://tpmas.xyz/Privacy.html", ///隐私链接
     privacyUrl: "#", ///隐私链接
     ifShare: true,  //登录大厅弹出分享
-
+    odds: [], //赔率配置
     vipCarConfigData: [],//VIP 周卡月卡配置信息
     propsMagicData: [
         {
