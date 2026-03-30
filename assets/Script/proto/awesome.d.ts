@@ -83,6 +83,12 @@ declare namespace awesome {
                         CMD_C_GAME_REPEAT_BET_NOTICE_RESP = 30,
                         CMD_C_GAME_NO_BET_NOTICE_RESP = 32,
                         CMD_C_GAME_SYNC_BALANCE_RESP = 34,
+                        CMD_C_GAME_GET_SELFRECORD_REQ = 41,
+                        CMD_C_GAME_GET_SELFRECORD_RESP = 42,
+                        CMD_C_GAME_GET_DRAWLIST_REQ = 43,
+                        CMD_C_GAME_GET_DRAWLIST_RESP = 44,
+                        CMD_C_GAME_GET_DRAWINFO_REQ = 45,
+                        CMD_C_GAME_GET_DRAWINFO_RESP = 46,
                         CMD_C_CHAT_REQ = 62,
                         CMD_C_CHAT_RESP = 63,
                         CMD_C_MATCH_FINISH_REQ = 100,
@@ -103,13 +109,13 @@ declare namespace awesome {
 
                     interface IBetData {
                         index?: (number|null);
-                        bet?: (number|null);
+                        bet?: (Long|null);
                     }
 
                     class BetData implements IBetData {
                         constructor(p?: com.cw.chess2.andarbahar.IBetData);
                         public index: number;
-                        public bet: number;
+                        public bet: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IBetData): com.cw.chess2.andarbahar.BetData;
                         public static encode(m: com.cw.chess2.andarbahar.BetData, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.BetData;
@@ -149,14 +155,14 @@ declare namespace awesome {
                     }
 
                     interface IAreaBet {
-                        totalBalance?: (number|null);
-                        ownerBalance?: (number|null);
+                        totalBalance?: (Long|null);
+                        ownerBalance?: (Long|null);
                     }
 
                     class AreaBet implements IAreaBet {
                         constructor(p?: com.cw.chess2.andarbahar.IAreaBet);
-                        public totalBalance: number;
-                        public ownerBalance: number;
+                        public totalBalance: Long;
+                        public ownerBalance: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IAreaBet): com.cw.chess2.andarbahar.AreaBet;
                         public static encode(m: com.cw.chess2.andarbahar.AreaBet, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.AreaBet;
@@ -207,6 +213,11 @@ declare namespace awesome {
                         nums?: (number|null);
                         cardsA?: (number[]|null);
                         cardsB?: (number[]|null);
+                        secretKey?: (string|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                        currencyStr?: (string|null);
+                        resultOriStr?: (string|null);
                     }
 
                     class GameGetTableStatusResp implements IGameGetTableStatusResp {
@@ -228,6 +239,11 @@ declare namespace awesome {
                         public nums: number;
                         public cardsA: number[];
                         public cardsB: number[];
+                        public secretKey: string;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public currencyStr: string;
+                        public resultOriStr: string;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameGetTableStatusResp): com.cw.chess2.andarbahar.GameGetTableStatusResp;
                         public static encode(m: com.cw.chess2.andarbahar.GameGetTableStatusResp, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameGetTableStatusResp;
@@ -271,13 +287,13 @@ declare namespace awesome {
 
                     interface IGameBetReq {
                         index?: (number|null);
-                        bet?: (number|null);
+                        bet?: (Long|null);
                     }
 
                     class GameBetReq implements IGameBetReq {
                         constructor(p?: com.cw.chess2.andarbahar.IGameBetReq);
                         public index: number;
-                        public bet: number;
+                        public bet: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameBetReq): com.cw.chess2.andarbahar.GameBetReq;
                         public static encode(m: com.cw.chess2.andarbahar.GameBetReq, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameBetReq;
@@ -287,20 +303,20 @@ declare namespace awesome {
                     interface IGameBetResp {
                         result?: (number|null);
                         index?: (number|null);
-                        bet?: (number|null);
-                        myBet?: (number|null);
-                        totalBet?: (number|null);
-                        balance?: (number|null);
+                        bet?: (Long|null);
+                        myBet?: (Long|null);
+                        totalBet?: (Long|null);
+                        balance?: (Long|null);
                     }
 
                     class GameBetResp implements IGameBetResp {
                         constructor(p?: com.cw.chess2.andarbahar.IGameBetResp);
                         public result: number;
                         public index: number;
-                        public bet: number;
-                        public myBet: number;
-                        public totalBet: number;
-                        public balance: number;
+                        public bet: Long;
+                        public myBet: Long;
+                        public totalBet: Long;
+                        public balance: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameBetResp): com.cw.chess2.andarbahar.GameBetResp;
                         public static encode(m: com.cw.chess2.andarbahar.GameBetResp, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameBetResp;
@@ -309,19 +325,19 @@ declare namespace awesome {
 
                     interface IGameBettingNotify {
                         index?: (number|null);
-                        bet?: (number|null);
-                        totalBet?: (number|null);
+                        bet?: (Long|null);
+                        totalBet?: (Long|null);
                         userId?: (number|null);
-                        balance?: (number|null);
+                        balance?: (Long|null);
                     }
 
                     class GameBettingNotify implements IGameBettingNotify {
                         constructor(p?: com.cw.chess2.andarbahar.IGameBettingNotify);
                         public index: number;
-                        public bet: number;
-                        public totalBet: number;
+                        public bet: Long;
+                        public totalBet: Long;
                         public userId: number;
-                        public balance: number;
+                        public balance: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameBettingNotify): com.cw.chess2.andarbahar.GameBettingNotify;
                         public static encode(m: com.cw.chess2.andarbahar.GameBettingNotify, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameBettingNotify;
@@ -341,7 +357,7 @@ declare namespace awesome {
 
                     interface IGameRepeatBetNoticeResp {
                         userId?: (number|null);
-                        balance?: (number|null);
+                        balance?: (Long|null);
                         areaBets?: (number[]|null);
                         list?: (com.cw.chess2.andarbahar.BetData[]|null);
                     }
@@ -349,7 +365,7 @@ declare namespace awesome {
                     class GameRepeatBetNoticeResp implements IGameRepeatBetNoticeResp {
                         constructor(p?: com.cw.chess2.andarbahar.IGameRepeatBetNoticeResp);
                         public userId: number;
-                        public balance: number;
+                        public balance: Long;
                         public areaBets: number[];
                         public list: com.cw.chess2.andarbahar.BetData[];
                         public static create(properties?: com.cw.chess2.andarbahar.IGameRepeatBetNoticeResp): com.cw.chess2.andarbahar.GameRepeatBetNoticeResp;
@@ -360,7 +376,7 @@ declare namespace awesome {
 
                     interface IGameRepeatBetResp {
                         result?: (number|null);
-                        balance?: (number|null);
+                        balance?: (Long|null);
                         areaBets?: (com.cw.chess2.andarbahar.AreaBet[]|null);
                         list?: (com.cw.chess2.andarbahar.BetData[]|null);
                     }
@@ -368,7 +384,7 @@ declare namespace awesome {
                     class GameRepeatBetResp implements IGameRepeatBetResp {
                         constructor(p?: com.cw.chess2.andarbahar.IGameRepeatBetResp);
                         public result: number;
-                        public balance: number;
+                        public balance: Long;
                         public areaBets: com.cw.chess2.andarbahar.AreaBet[];
                         public list: com.cw.chess2.andarbahar.BetData[];
                         public static create(properties?: com.cw.chess2.andarbahar.IGameRepeatBetResp): com.cw.chess2.andarbahar.GameRepeatBetResp;
@@ -428,12 +444,18 @@ declare namespace awesome {
                     interface IGameBetNoticeResp {
                         count?: (number|null);
                         repeatBet?: (number|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                        period?: (string|null);
                     }
 
                     class GameBetNoticeResp implements IGameBetNoticeResp {
                         constructor(p?: com.cw.chess2.andarbahar.IGameBetNoticeResp);
                         public count: number;
                         public repeatBet: number;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public period: string;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameBetNoticeResp): com.cw.chess2.andarbahar.GameBetNoticeResp;
                         public static encode(m: com.cw.chess2.andarbahar.GameBetNoticeResp, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameBetNoticeResp;
@@ -446,6 +468,9 @@ declare namespace awesome {
                         nums?: (number|null);
                         cardsA?: (number[]|null);
                         cardsB?: (number[]|null);
+                        secretKey?: (string|null);
+                        period?: (string|null);
+                        resultOriStr?: (string|null);
                     }
 
                     class GameResultResp implements IGameResultResp {
@@ -455,6 +480,9 @@ declare namespace awesome {
                         public nums: number;
                         public cardsA: number[];
                         public cardsB: number[];
+                        public secretKey: string;
+                        public period: string;
+                        public resultOriStr: string;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameResultResp): com.cw.chess2.andarbahar.GameResultResp;
                         public static encode(m: com.cw.chess2.andarbahar.GameResultResp, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameResultResp;
@@ -463,15 +491,15 @@ declare namespace awesome {
 
                     interface IWinnerBalance {
                         index?: (number|null);
-                        amount?: (number|null);
-                        bets?: (number|null);
+                        amount?: (Long|null);
+                        bets?: (Long|null);
                     }
 
                     class WinnerBalance implements IWinnerBalance {
                         constructor(p?: com.cw.chess2.andarbahar.IWinnerBalance);
                         public index: number;
-                        public amount: number;
-                        public bets: number;
+                        public amount: Long;
+                        public bets: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IWinnerBalance): com.cw.chess2.andarbahar.WinnerBalance;
                         public static encode(m: com.cw.chess2.andarbahar.WinnerBalance, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.WinnerBalance;
@@ -480,14 +508,14 @@ declare namespace awesome {
 
                     interface IWinnerData {
                         userId?: (number|null);
-                        balance?: (number|null);
+                        balance?: (Long|null);
                         wins?: (com.cw.chess2.andarbahar.WinnerBalance[]|null);
                     }
 
                     class WinnerData implements IWinnerData {
                         constructor(p?: com.cw.chess2.andarbahar.IWinnerData);
                         public userId: number;
-                        public balance: number;
+                        public balance: Long;
                         public wins: com.cw.chess2.andarbahar.WinnerBalance[];
                         public static create(properties?: com.cw.chess2.andarbahar.IWinnerData): com.cw.chess2.andarbahar.WinnerData;
                         public static encode(m: com.cw.chess2.andarbahar.WinnerData, w?: $protobuf.Writer): $protobuf.Writer;
@@ -580,15 +608,175 @@ declare namespace awesome {
                     }
 
                     interface IGameSyncBalanceResp {
-                        balance?: (number|null);
+                        balance?: (Long|null);
                     }
 
                     class GameSyncBalanceResp implements IGameSyncBalanceResp {
                         constructor(p?: com.cw.chess2.andarbahar.IGameSyncBalanceResp);
-                        public balance: number;
+                        public balance: Long;
                         public static create(properties?: com.cw.chess2.andarbahar.IGameSyncBalanceResp): com.cw.chess2.andarbahar.GameSyncBalanceResp;
                         public static encode(m: com.cw.chess2.andarbahar.GameSyncBalanceResp, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GameSyncBalanceResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IRecordInfo {
+                        period?: (string|null);
+                        joker?: (number|null);
+                        nums?: (number|null);
+                        cardsA?: (number[]|null);
+                        cardsB?: (number[]|null);
+                        wins?: (com.cw.chess2.andarbahar.WinnerBalance[]|null);
+                        winlose?: (Long|null);
+                        betTime?: (number|null);
+                    }
+
+                    class RecordInfo implements IRecordInfo {
+                        constructor(p?: com.cw.chess2.andarbahar.IRecordInfo);
+                        public period: string;
+                        public joker: number;
+                        public nums: number;
+                        public cardsA: number[];
+                        public cardsB: number[];
+                        public wins: com.cw.chess2.andarbahar.WinnerBalance[];
+                        public winlose: Long;
+                        public betTime: number;
+                        public static create(properties?: com.cw.chess2.andarbahar.IRecordInfo): com.cw.chess2.andarbahar.RecordInfo;
+                        public static encode(m: com.cw.chess2.andarbahar.RecordInfo, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.RecordInfo;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetSelfRecordReq {
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                    }
+
+                    class GetSelfRecordReq implements IGetSelfRecordReq {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetSelfRecordReq);
+                        public page: number;
+                        public pageSize: number;
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetSelfRecordReq): com.cw.chess2.andarbahar.GetSelfRecordReq;
+                        public static encode(m: com.cw.chess2.andarbahar.GetSelfRecordReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetSelfRecordReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetSelfRecordResp {
+                        records?: (com.cw.chess2.andarbahar.RecordInfo[]|null);
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                        count?: (number|null);
+                        PageCount?: (number|null);
+                    }
+
+                    class GetSelfRecordResp implements IGetSelfRecordResp {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetSelfRecordResp);
+                        public records: com.cw.chess2.andarbahar.RecordInfo[];
+                        public page: number;
+                        public pageSize: number;
+                        public count: number;
+                        public PageCount: number;
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetSelfRecordResp): com.cw.chess2.andarbahar.GetSelfRecordResp;
+                        public static encode(m: com.cw.chess2.andarbahar.GetSelfRecordResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetSelfRecordResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IDrawInfo {
+                        period?: (string|null);
+                        joker?: (number|null);
+                        nums?: (number|null);
+                        cardsA?: (number[]|null);
+                        cardsB?: (number[]|null);
+                        secretKey?: (string|null);
+                        encryptKey?: (string|null);
+                        encryptResult?: (string|null);
+                        resultOriStr?: (string|null);
+                    }
+
+                    class DrawInfo implements IDrawInfo {
+                        constructor(p?: com.cw.chess2.andarbahar.IDrawInfo);
+                        public period: string;
+                        public joker: number;
+                        public nums: number;
+                        public cardsA: number[];
+                        public cardsB: number[];
+                        public secretKey: string;
+                        public encryptKey: string;
+                        public encryptResult: string;
+                        public resultOriStr: string;
+                        public static create(properties?: com.cw.chess2.andarbahar.IDrawInfo): com.cw.chess2.andarbahar.DrawInfo;
+                        public static encode(m: com.cw.chess2.andarbahar.DrawInfo, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.DrawInfo;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawListReq {
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                    }
+
+                    class GetDrawListReq implements IGetDrawListReq {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetDrawListReq);
+                        public page: number;
+                        public pageSize: number;
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetDrawListReq): com.cw.chess2.andarbahar.GetDrawListReq;
+                        public static encode(m: com.cw.chess2.andarbahar.GetDrawListReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetDrawListReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawListResp {
+                        records?: (com.cw.chess2.andarbahar.DrawInfo[]|null);
+                        page?: (number|null);
+                        pageSize?: (number|null);
+                        count?: (number|null);
+                        PageCount?: (number|null);
+                        ANum?: (number|null);
+                        BNum?: (number|null);
+                        statisticNum?: (number|null);
+                    }
+
+                    class GetDrawListResp implements IGetDrawListResp {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetDrawListResp);
+                        public records: com.cw.chess2.andarbahar.DrawInfo[];
+                        public page: number;
+                        public pageSize: number;
+                        public count: number;
+                        public PageCount: number;
+                        public ANum: number;
+                        public BNum: number;
+                        public statisticNum: number;
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetDrawListResp): com.cw.chess2.andarbahar.GetDrawListResp;
+                        public static encode(m: com.cw.chess2.andarbahar.GetDrawListResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetDrawListResp;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawInfoReq {
+                        period?: (string|null);
+                    }
+
+                    class GetDrawInfoReq implements IGetDrawInfoReq {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetDrawInfoReq);
+                        public period: string;
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetDrawInfoReq): com.cw.chess2.andarbahar.GetDrawInfoReq;
+                        public static encode(m: com.cw.chess2.andarbahar.GetDrawInfoReq, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetDrawInfoReq;
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    interface IGetDrawInfoResp {
+                        record?: (com.cw.chess2.andarbahar.DrawInfo|null);
+                    }
+
+                    class GetDrawInfoResp implements IGetDrawInfoResp {
+                        constructor(p?: com.cw.chess2.andarbahar.IGetDrawInfoResp);
+                        public record?: (com.cw.chess2.andarbahar.DrawInfo|null);
+                        public static create(properties?: com.cw.chess2.andarbahar.IGetDrawInfoResp): com.cw.chess2.andarbahar.GetDrawInfoResp;
+                        public static encode(m: com.cw.chess2.andarbahar.GetDrawInfoResp, w?: $protobuf.Writer): $protobuf.Writer;
+                        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.andarbahar.GetDrawInfoResp;
                         public static getTypeUrl(typeUrlPrefix?: string): string;
                     }
 
@@ -640,7 +828,7 @@ declare namespace awesome {
                     interface IGameUser {
                         uid?: (number|null);
                         realUser?: (number|null);
-                        coin?: (number|null);
+                        coin?: (Long|null);
                         userNick?: (string|null);
                         userHead?: (string|null);
                         userType?: (number|null);
@@ -659,7 +847,7 @@ declare namespace awesome {
                         constructor(p?: com.cw.chess2.platform.IGameUser);
                         public uid: number;
                         public realUser: number;
-                        public coin: number;
+                        public coin: Long;
                         public userNick: string;
                         public userHead: string;
                         public userType: number;
@@ -1134,6 +1322,7 @@ declare namespace awesome {
                         minChips?: (number|null);
                         maxBets?: (number[]|null);
                         chips?: (number[]|null);
+                        odds?: (number[]|null);
                     }
 
                     class AndarBaharLevelDesc implements IAndarBaharLevelDesc {
@@ -1143,6 +1332,7 @@ declare namespace awesome {
                         public minChips: number;
                         public maxBets: number[];
                         public chips: number[];
+                        public odds: number[];
                         public static create(properties?: com.cw.chess2.platform.IAndarBaharLevelDesc): com.cw.chess2.platform.AndarBaharLevelDesc;
                         public static encode(m: com.cw.chess2.platform.AndarBaharLevelDesc, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.platform.AndarBaharLevelDesc;
@@ -1155,6 +1345,7 @@ declare namespace awesome {
                         minChips?: (number|null);
                         maxBets?: (number[]|null);
                         chips?: (number[]|null);
+                        odds?: (number[]|null);
                     }
 
                     class AndarBaharDeskLevelDesc implements IAndarBaharDeskLevelDesc {
@@ -1164,6 +1355,7 @@ declare namespace awesome {
                         public minChips: number;
                         public maxBets: number[];
                         public chips: number[];
+                        public odds: number[];
                         public static create(properties?: com.cw.chess2.platform.IAndarBaharDeskLevelDesc): com.cw.chess2.platform.AndarBaharDeskLevelDesc;
                         public static encode(m: com.cw.chess2.platform.AndarBaharDeskLevelDesc, w?: $protobuf.Writer): $protobuf.Writer;
                         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): com.cw.chess2.platform.AndarBaharDeskLevelDesc;

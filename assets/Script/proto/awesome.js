@@ -213,6 +213,12 @@ export const com = $root.com = (() => {
                     values[valuesById[30] = "CMD_C_GAME_REPEAT_BET_NOTICE_RESP"] = 30;
                     values[valuesById[32] = "CMD_C_GAME_NO_BET_NOTICE_RESP"] = 32;
                     values[valuesById[34] = "CMD_C_GAME_SYNC_BALANCE_RESP"] = 34;
+                    values[valuesById[41] = "CMD_C_GAME_GET_SELFRECORD_REQ"] = 41;
+                    values[valuesById[42] = "CMD_C_GAME_GET_SELFRECORD_RESP"] = 42;
+                    values[valuesById[43] = "CMD_C_GAME_GET_DRAWLIST_REQ"] = 43;
+                    values[valuesById[44] = "CMD_C_GAME_GET_DRAWLIST_RESP"] = 44;
+                    values[valuesById[45] = "CMD_C_GAME_GET_DRAWINFO_REQ"] = 45;
+                    values[valuesById[46] = "CMD_C_GAME_GET_DRAWINFO_RESP"] = 46;
                     values[valuesById[62] = "CMD_C_CHAT_REQ"] = 62;
                     values[valuesById[63] = "CMD_C_CHAT_RESP"] = 63;
                     values[valuesById[100] = "CMD_C_MATCH_FINISH_REQ"] = 100;
@@ -244,7 +250,7 @@ export const com = $root.com = (() => {
                     }
 
                     BetData.prototype.index = 0;
-                    BetData.prototype.bet = 0;
+                    BetData.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     BetData.create = function create(properties) {
                         return new BetData(properties);
@@ -256,7 +262,7 @@ export const com = $root.com = (() => {
                         if (m.index != null && Object.hasOwnProperty.call(m, "index"))
                             w.uint32(8).uint32(m.index);
                         if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
-                            w.uint32(16).uint32(m.bet);
+                            w.uint32(16).int64(m.bet);
                         return w;
                     };
 
@@ -272,7 +278,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.bet = r.uint32();
+                                    m.bet = r.int64();
                                     break;
                                 }
                             default:
@@ -432,8 +438,8 @@ export const com = $root.com = (() => {
                                     this[ks[i]] = p[ks[i]];
                     }
 
-                    AreaBet.prototype.totalBalance = 0;
-                    AreaBet.prototype.ownerBalance = 0;
+                    AreaBet.prototype.totalBalance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    AreaBet.prototype.ownerBalance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     AreaBet.create = function create(properties) {
                         return new AreaBet(properties);
@@ -443,9 +449,9 @@ export const com = $root.com = (() => {
                         if (!w)
                             w = $Writer.create();
                         if (m.totalBalance != null && Object.hasOwnProperty.call(m, "totalBalance"))
-                            w.uint32(8).uint32(m.totalBalance);
+                            w.uint32(8).int64(m.totalBalance);
                         if (m.ownerBalance != null && Object.hasOwnProperty.call(m, "ownerBalance"))
-                            w.uint32(16).uint32(m.ownerBalance);
+                            w.uint32(16).int64(m.ownerBalance);
                         return w;
                     };
 
@@ -457,11 +463,11 @@ export const com = $root.com = (() => {
                             var t = r.uint32();
                             switch (t >>> 3) {
                             case 1: {
-                                    m.totalBalance = r.uint32();
+                                    m.totalBalance = r.int64();
                                     break;
                                 }
                             case 2: {
-                                    m.ownerBalance = r.uint32();
+                                    m.ownerBalance = r.int64();
                                     break;
                                 }
                             default:
@@ -617,6 +623,11 @@ export const com = $root.com = (() => {
                     GameGetTableStatusResp.prototype.nums = 0;
                     GameGetTableStatusResp.prototype.cardsA = $util.emptyArray;
                     GameGetTableStatusResp.prototype.cardsB = $util.emptyArray;
+                    GameGetTableStatusResp.prototype.secretKey = "";
+                    GameGetTableStatusResp.prototype.encryptKey = "";
+                    GameGetTableStatusResp.prototype.encryptResult = "";
+                    GameGetTableStatusResp.prototype.currencyStr = "";
+                    GameGetTableStatusResp.prototype.resultOriStr = "";
 
                     GameGetTableStatusResp.create = function create(properties) {
                         return new GameGetTableStatusResp(properties);
@@ -675,6 +686,16 @@ export const com = $root.com = (() => {
                                 w.uint32(m.cardsB[i]);
                             w.ldelim();
                         }
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(146).string(m.secretKey);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(154).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(162).string(m.encryptResult);
+                        if (m.currencyStr != null && Object.hasOwnProperty.call(m, "currencyStr"))
+                            w.uint32(170).string(m.currencyStr);
+                        if (m.resultOriStr != null && Object.hasOwnProperty.call(m, "resultOriStr"))
+                            w.uint32(178).string(m.resultOriStr);
                         return w;
                     };
 
@@ -773,6 +794,26 @@ export const com = $root.com = (() => {
                                             m.cardsB.push(r.uint32());
                                     } else
                                         m.cardsB.push(r.uint32());
+                                    break;
+                                }
+                            case 18: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 19: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 20: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            case 21: {
+                                    m.currencyStr = r.string();
+                                    break;
+                                }
+                            case 22: {
+                                    m.resultOriStr = r.string();
                                     break;
                                 }
                             default:
@@ -943,7 +984,7 @@ export const com = $root.com = (() => {
                     }
 
                     GameBetReq.prototype.index = 0;
-                    GameBetReq.prototype.bet = 0;
+                    GameBetReq.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     GameBetReq.create = function create(properties) {
                         return new GameBetReq(properties);
@@ -955,7 +996,7 @@ export const com = $root.com = (() => {
                         if (m.index != null && Object.hasOwnProperty.call(m, "index"))
                             w.uint32(8).uint32(m.index);
                         if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
-                            w.uint32(16).uint32(m.bet);
+                            w.uint32(16).int64(m.bet);
                         return w;
                     };
 
@@ -971,7 +1012,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.bet = r.uint32();
+                                    m.bet = r.int64();
                                     break;
                                 }
                             default:
@@ -1003,10 +1044,10 @@ export const com = $root.com = (() => {
 
                     GameBetResp.prototype.result = 0;
                     GameBetResp.prototype.index = 0;
-                    GameBetResp.prototype.bet = 0;
-                    GameBetResp.prototype.myBet = 0;
-                    GameBetResp.prototype.totalBet = 0;
-                    GameBetResp.prototype.balance = 0;
+                    GameBetResp.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.myBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.totalBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBetResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     GameBetResp.create = function create(properties) {
                         return new GameBetResp(properties);
@@ -1020,13 +1061,13 @@ export const com = $root.com = (() => {
                         if (m.index != null && Object.hasOwnProperty.call(m, "index"))
                             w.uint32(16).uint32(m.index);
                         if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
-                            w.uint32(24).uint32(m.bet);
+                            w.uint32(24).int64(m.bet);
                         if (m.myBet != null && Object.hasOwnProperty.call(m, "myBet"))
-                            w.uint32(32).uint32(m.myBet);
+                            w.uint32(32).int64(m.myBet);
                         if (m.totalBet != null && Object.hasOwnProperty.call(m, "totalBet"))
-                            w.uint32(40).uint32(m.totalBet);
+                            w.uint32(40).int64(m.totalBet);
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(48).uint32(m.balance);
+                            w.uint32(48).int64(m.balance);
                         return w;
                     };
 
@@ -1046,19 +1087,19 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 3: {
-                                    m.bet = r.uint32();
+                                    m.bet = r.int64();
                                     break;
                                 }
                             case 4: {
-                                    m.myBet = r.uint32();
+                                    m.myBet = r.int64();
                                     break;
                                 }
                             case 5: {
-                                    m.totalBet = r.uint32();
+                                    m.totalBet = r.int64();
                                     break;
                                 }
                             case 6: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             default:
@@ -1089,10 +1130,10 @@ export const com = $root.com = (() => {
                     }
 
                     GameBettingNotify.prototype.index = 0;
-                    GameBettingNotify.prototype.bet = 0;
-                    GameBettingNotify.prototype.totalBet = 0;
+                    GameBettingNotify.prototype.bet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    GameBettingNotify.prototype.totalBet = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
                     GameBettingNotify.prototype.userId = 0;
-                    GameBettingNotify.prototype.balance = 0;
+                    GameBettingNotify.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     GameBettingNotify.create = function create(properties) {
                         return new GameBettingNotify(properties);
@@ -1104,13 +1145,13 @@ export const com = $root.com = (() => {
                         if (m.index != null && Object.hasOwnProperty.call(m, "index"))
                             w.uint32(8).uint32(m.index);
                         if (m.bet != null && Object.hasOwnProperty.call(m, "bet"))
-                            w.uint32(16).uint32(m.bet);
+                            w.uint32(16).int64(m.bet);
                         if (m.totalBet != null && Object.hasOwnProperty.call(m, "totalBet"))
-                            w.uint32(24).uint32(m.totalBet);
+                            w.uint32(24).int64(m.totalBet);
                         if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
                             w.uint32(32).uint32(m.userId);
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(40).uint32(m.balance);
+                            w.uint32(40).int64(m.balance);
                         return w;
                     };
 
@@ -1126,11 +1167,11 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.bet = r.uint32();
+                                    m.bet = r.int64();
                                     break;
                                 }
                             case 3: {
-                                    m.totalBet = r.uint32();
+                                    m.totalBet = r.int64();
                                     break;
                                 }
                             case 4: {
@@ -1138,7 +1179,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 5: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             default:
@@ -1215,7 +1256,7 @@ export const com = $root.com = (() => {
                     }
 
                     GameRepeatBetNoticeResp.prototype.userId = 0;
-                    GameRepeatBetNoticeResp.prototype.balance = 0;
+                    GameRepeatBetNoticeResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
                     GameRepeatBetNoticeResp.prototype.areaBets = $util.emptyArray;
                     GameRepeatBetNoticeResp.prototype.list = $util.emptyArray;
 
@@ -1229,7 +1270,7 @@ export const com = $root.com = (() => {
                         if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
                             w.uint32(8).uint32(m.userId);
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(16).uint32(m.balance);
+                            w.uint32(16).int64(m.balance);
                         if (m.areaBets != null && m.areaBets.length) {
                             w.uint32(26).fork();
                             for (var i = 0; i < m.areaBets.length; ++i)
@@ -1255,7 +1296,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             case 3: {
@@ -1305,7 +1346,7 @@ export const com = $root.com = (() => {
                     }
 
                     GameRepeatBetResp.prototype.result = 0;
-                    GameRepeatBetResp.prototype.balance = 0;
+                    GameRepeatBetResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
                     GameRepeatBetResp.prototype.areaBets = $util.emptyArray;
                     GameRepeatBetResp.prototype.list = $util.emptyArray;
 
@@ -1319,7 +1360,7 @@ export const com = $root.com = (() => {
                         if (m.result != null && Object.hasOwnProperty.call(m, "result"))
                             w.uint32(8).uint32(m.result);
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(16).uint32(m.balance);
+                            w.uint32(16).int64(m.balance);
                         if (m.areaBets != null && m.areaBets.length) {
                             for (var i = 0; i < m.areaBets.length; ++i)
                                 $root.com.cw.chess2.andarbahar.AreaBet.encode(m.areaBets[i], w.uint32(26).fork()).ldelim();
@@ -1343,7 +1384,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             case 3: {
@@ -1579,6 +1620,9 @@ export const com = $root.com = (() => {
 
                     GameBetNoticeResp.prototype.count = 0;
                     GameBetNoticeResp.prototype.repeatBet = 0;
+                    GameBetNoticeResp.prototype.encryptKey = "";
+                    GameBetNoticeResp.prototype.encryptResult = "";
+                    GameBetNoticeResp.prototype.period = "";
 
                     GameBetNoticeResp.create = function create(properties) {
                         return new GameBetNoticeResp(properties);
@@ -1591,6 +1635,12 @@ export const com = $root.com = (() => {
                             w.uint32(8).uint32(m.count);
                         if (m.repeatBet != null && Object.hasOwnProperty.call(m, "repeatBet"))
                             w.uint32(16).uint32(m.repeatBet);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(26).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(34).string(m.encryptResult);
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(42).string(m.period);
                         return w;
                     };
 
@@ -1607,6 +1657,18 @@ export const com = $root.com = (() => {
                                 }
                             case 2: {
                                     m.repeatBet = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 4: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            case 5: {
+                                    m.period = r.string();
                                     break;
                                 }
                             default:
@@ -1643,6 +1705,9 @@ export const com = $root.com = (() => {
                     GameResultResp.prototype.nums = 0;
                     GameResultResp.prototype.cardsA = $util.emptyArray;
                     GameResultResp.prototype.cardsB = $util.emptyArray;
+                    GameResultResp.prototype.secretKey = "";
+                    GameResultResp.prototype.period = "";
+                    GameResultResp.prototype.resultOriStr = "";
 
                     GameResultResp.create = function create(properties) {
                         return new GameResultResp(properties);
@@ -1669,6 +1734,12 @@ export const com = $root.com = (() => {
                                 w.uint32(m.cardsB[i]);
                             w.ldelim();
                         }
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(50).string(m.secretKey);
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(58).string(m.period);
+                        if (m.resultOriStr != null && Object.hasOwnProperty.call(m, "resultOriStr"))
+                            w.uint32(66).string(m.resultOriStr);
                         return w;
                     };
 
@@ -1713,6 +1784,18 @@ export const com = $root.com = (() => {
                                         m.cardsB.push(r.uint32());
                                     break;
                                 }
+                            case 6: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 7: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            case 8: {
+                                    m.resultOriStr = r.string();
+                                    break;
+                                }
                             default:
                                 r.skipType(t & 7);
                                 break;
@@ -1741,8 +1824,8 @@ export const com = $root.com = (() => {
                     }
 
                     WinnerBalance.prototype.index = 0;
-                    WinnerBalance.prototype.amount = 0;
-                    WinnerBalance.prototype.bets = 0;
+                    WinnerBalance.prototype.amount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    WinnerBalance.prototype.bets = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     WinnerBalance.create = function create(properties) {
                         return new WinnerBalance(properties);
@@ -1754,9 +1837,9 @@ export const com = $root.com = (() => {
                         if (m.index != null && Object.hasOwnProperty.call(m, "index"))
                             w.uint32(8).uint32(m.index);
                         if (m.amount != null && Object.hasOwnProperty.call(m, "amount"))
-                            w.uint32(16).uint32(m.amount);
+                            w.uint32(16).int64(m.amount);
                         if (m.bets != null && Object.hasOwnProperty.call(m, "bets"))
-                            w.uint32(24).uint32(m.bets);
+                            w.uint32(24).int64(m.bets);
                         return w;
                     };
 
@@ -1772,11 +1855,11 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.amount = r.uint32();
+                                    m.amount = r.int64();
                                     break;
                                 }
                             case 3: {
-                                    m.bets = r.uint32();
+                                    m.bets = r.int64();
                                     break;
                                 }
                             default:
@@ -1808,7 +1891,7 @@ export const com = $root.com = (() => {
                     }
 
                     WinnerData.prototype.userId = 0;
-                    WinnerData.prototype.balance = 0;
+                    WinnerData.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
                     WinnerData.prototype.wins = $util.emptyArray;
 
                     WinnerData.create = function create(properties) {
@@ -1821,7 +1904,7 @@ export const com = $root.com = (() => {
                         if (m.userId != null && Object.hasOwnProperty.call(m, "userId"))
                             w.uint32(8).uint32(m.userId);
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(16).uint32(m.balance);
+                            w.uint32(16).int64(m.balance);
                         if (m.wins != null && m.wins.length) {
                             for (var i = 0; i < m.wins.length; ++i)
                                 $root.com.cw.chess2.andarbahar.WinnerBalance.encode(m.wins[i], w.uint32(26).fork()).ldelim();
@@ -1841,7 +1924,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 2: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             case 3: {
@@ -2230,7 +2313,7 @@ export const com = $root.com = (() => {
                                     this[ks[i]] = p[ks[i]];
                     }
 
-                    GameSyncBalanceResp.prototype.balance = 0;
+                    GameSyncBalanceResp.prototype.balance = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
                     GameSyncBalanceResp.create = function create(properties) {
                         return new GameSyncBalanceResp(properties);
@@ -2240,7 +2323,7 @@ export const com = $root.com = (() => {
                         if (!w)
                             w = $Writer.create();
                         if (m.balance != null && Object.hasOwnProperty.call(m, "balance"))
-                            w.uint32(8).uint32(m.balance);
+                            w.uint32(8).int64(m.balance);
                         return w;
                     };
 
@@ -2252,7 +2335,7 @@ export const com = $root.com = (() => {
                             var t = r.uint32();
                             switch (t >>> 3) {
                             case 1: {
-                                    m.balance = r.uint32();
+                                    m.balance = r.int64();
                                     break;
                                 }
                             default:
@@ -2271,6 +2354,681 @@ export const com = $root.com = (() => {
                     };
 
                     return GameSyncBalanceResp;
+                })();
+
+                andarbahar.RecordInfo = (function() {
+
+                    function RecordInfo(p) {
+                        this.cardsA = [];
+                        this.cardsB = [];
+                        this.wins = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    RecordInfo.prototype.period = "";
+                    RecordInfo.prototype.joker = 0;
+                    RecordInfo.prototype.nums = 0;
+                    RecordInfo.prototype.cardsA = $util.emptyArray;
+                    RecordInfo.prototype.cardsB = $util.emptyArray;
+                    RecordInfo.prototype.wins = $util.emptyArray;
+                    RecordInfo.prototype.winlose = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+                    RecordInfo.prototype.betTime = 0;
+
+                    RecordInfo.create = function create(properties) {
+                        return new RecordInfo(properties);
+                    };
+
+                    RecordInfo.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        if (m.joker != null && Object.hasOwnProperty.call(m, "joker"))
+                            w.uint32(16).uint32(m.joker);
+                        if (m.nums != null && Object.hasOwnProperty.call(m, "nums"))
+                            w.uint32(24).uint32(m.nums);
+                        if (m.cardsA != null && m.cardsA.length) {
+                            w.uint32(34).fork();
+                            for (var i = 0; i < m.cardsA.length; ++i)
+                                w.uint32(m.cardsA[i]);
+                            w.ldelim();
+                        }
+                        if (m.cardsB != null && m.cardsB.length) {
+                            w.uint32(42).fork();
+                            for (var i = 0; i < m.cardsB.length; ++i)
+                                w.uint32(m.cardsB[i]);
+                            w.ldelim();
+                        }
+                        if (m.wins != null && m.wins.length) {
+                            for (var i = 0; i < m.wins.length; ++i)
+                                $root.com.cw.chess2.andarbahar.WinnerBalance.encode(m.wins[i], w.uint32(50).fork()).ldelim();
+                        }
+                        if (m.winlose != null && Object.hasOwnProperty.call(m, "winlose"))
+                            w.uint32(56).int64(m.winlose);
+                        if (m.betTime != null && Object.hasOwnProperty.call(m, "betTime"))
+                            w.uint32(64).uint32(m.betTime);
+                        return w;
+                    };
+
+                    RecordInfo.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.RecordInfo();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            case 2: {
+                                    m.joker = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.nums = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    if (!(m.cardsA && m.cardsA.length))
+                                        m.cardsA = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.cardsA.push(r.uint32());
+                                    } else
+                                        m.cardsA.push(r.uint32());
+                                    break;
+                                }
+                            case 5: {
+                                    if (!(m.cardsB && m.cardsB.length))
+                                        m.cardsB = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.cardsB.push(r.uint32());
+                                    } else
+                                        m.cardsB.push(r.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    if (!(m.wins && m.wins.length))
+                                        m.wins = [];
+                                    m.wins.push($root.com.cw.chess2.andarbahar.WinnerBalance.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 7: {
+                                    m.winlose = r.int64();
+                                    break;
+                                }
+                            case 8: {
+                                    m.betTime = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    RecordInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.RecordInfo";
+                    };
+
+                    return RecordInfo;
+                })();
+
+                andarbahar.GetSelfRecordReq = (function() {
+
+                    function GetSelfRecordReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetSelfRecordReq.prototype.page = 0;
+                    GetSelfRecordReq.prototype.pageSize = 0;
+
+                    GetSelfRecordReq.create = function create(properties) {
+                        return new GetSelfRecordReq(properties);
+                    };
+
+                    GetSelfRecordReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(8).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(16).uint32(m.pageSize);
+                        return w;
+                    };
+
+                    GetSelfRecordReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetSelfRecordReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetSelfRecordReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetSelfRecordReq";
+                    };
+
+                    return GetSelfRecordReq;
+                })();
+
+                andarbahar.GetSelfRecordResp = (function() {
+
+                    function GetSelfRecordResp(p) {
+                        this.records = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetSelfRecordResp.prototype.records = $util.emptyArray;
+                    GetSelfRecordResp.prototype.page = 0;
+                    GetSelfRecordResp.prototype.pageSize = 0;
+                    GetSelfRecordResp.prototype.count = 0;
+                    GetSelfRecordResp.prototype.PageCount = 0;
+
+                    GetSelfRecordResp.create = function create(properties) {
+                        return new GetSelfRecordResp(properties);
+                    };
+
+                    GetSelfRecordResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.records != null && m.records.length) {
+                            for (var i = 0; i < m.records.length; ++i)
+                                $root.com.cw.chess2.andarbahar.RecordInfo.encode(m.records[i], w.uint32(10).fork()).ldelim();
+                        }
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(16).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(24).uint32(m.pageSize);
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(32).uint32(m.count);
+                        if (m.PageCount != null && Object.hasOwnProperty.call(m, "PageCount"))
+                            w.uint32(40).uint32(m.PageCount);
+                        return w;
+                    };
+
+                    GetSelfRecordResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetSelfRecordResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.records && m.records.length))
+                                        m.records = [];
+                                    m.records.push($root.com.cw.chess2.andarbahar.RecordInfo.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 2: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.PageCount = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetSelfRecordResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetSelfRecordResp";
+                    };
+
+                    return GetSelfRecordResp;
+                })();
+
+                andarbahar.DrawInfo = (function() {
+
+                    function DrawInfo(p) {
+                        this.cardsA = [];
+                        this.cardsB = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    DrawInfo.prototype.period = "";
+                    DrawInfo.prototype.joker = 0;
+                    DrawInfo.prototype.nums = 0;
+                    DrawInfo.prototype.cardsA = $util.emptyArray;
+                    DrawInfo.prototype.cardsB = $util.emptyArray;
+                    DrawInfo.prototype.secretKey = "";
+                    DrawInfo.prototype.encryptKey = "";
+                    DrawInfo.prototype.encryptResult = "";
+                    DrawInfo.prototype.resultOriStr = "";
+
+                    DrawInfo.create = function create(properties) {
+                        return new DrawInfo(properties);
+                    };
+
+                    DrawInfo.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        if (m.joker != null && Object.hasOwnProperty.call(m, "joker"))
+                            w.uint32(16).uint32(m.joker);
+                        if (m.nums != null && Object.hasOwnProperty.call(m, "nums"))
+                            w.uint32(24).uint32(m.nums);
+                        if (m.cardsA != null && m.cardsA.length) {
+                            w.uint32(34).fork();
+                            for (var i = 0; i < m.cardsA.length; ++i)
+                                w.uint32(m.cardsA[i]);
+                            w.ldelim();
+                        }
+                        if (m.cardsB != null && m.cardsB.length) {
+                            w.uint32(42).fork();
+                            for (var i = 0; i < m.cardsB.length; ++i)
+                                w.uint32(m.cardsB[i]);
+                            w.ldelim();
+                        }
+                        if (m.secretKey != null && Object.hasOwnProperty.call(m, "secretKey"))
+                            w.uint32(50).string(m.secretKey);
+                        if (m.encryptKey != null && Object.hasOwnProperty.call(m, "encryptKey"))
+                            w.uint32(58).string(m.encryptKey);
+                        if (m.encryptResult != null && Object.hasOwnProperty.call(m, "encryptResult"))
+                            w.uint32(66).string(m.encryptResult);
+                        if (m.resultOriStr != null && Object.hasOwnProperty.call(m, "resultOriStr"))
+                            w.uint32(74).string(m.resultOriStr);
+                        return w;
+                    };
+
+                    DrawInfo.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.DrawInfo();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            case 2: {
+                                    m.joker = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.nums = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    if (!(m.cardsA && m.cardsA.length))
+                                        m.cardsA = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.cardsA.push(r.uint32());
+                                    } else
+                                        m.cardsA.push(r.uint32());
+                                    break;
+                                }
+                            case 5: {
+                                    if (!(m.cardsB && m.cardsB.length))
+                                        m.cardsB = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.cardsB.push(r.uint32());
+                                    } else
+                                        m.cardsB.push(r.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    m.secretKey = r.string();
+                                    break;
+                                }
+                            case 7: {
+                                    m.encryptKey = r.string();
+                                    break;
+                                }
+                            case 8: {
+                                    m.encryptResult = r.string();
+                                    break;
+                                }
+                            case 9: {
+                                    m.resultOriStr = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    DrawInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.DrawInfo";
+                    };
+
+                    return DrawInfo;
+                })();
+
+                andarbahar.GetDrawListReq = (function() {
+
+                    function GetDrawListReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawListReq.prototype.page = 0;
+                    GetDrawListReq.prototype.pageSize = 0;
+
+                    GetDrawListReq.create = function create(properties) {
+                        return new GetDrawListReq(properties);
+                    };
+
+                    GetDrawListReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(8).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(16).uint32(m.pageSize);
+                        return w;
+                    };
+
+                    GetDrawListReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetDrawListReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 2: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawListReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetDrawListReq";
+                    };
+
+                    return GetDrawListReq;
+                })();
+
+                andarbahar.GetDrawListResp = (function() {
+
+                    function GetDrawListResp(p) {
+                        this.records = [];
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawListResp.prototype.records = $util.emptyArray;
+                    GetDrawListResp.prototype.page = 0;
+                    GetDrawListResp.prototype.pageSize = 0;
+                    GetDrawListResp.prototype.count = 0;
+                    GetDrawListResp.prototype.PageCount = 0;
+                    GetDrawListResp.prototype.ANum = 0;
+                    GetDrawListResp.prototype.BNum = 0;
+                    GetDrawListResp.prototype.statisticNum = 0;
+
+                    GetDrawListResp.create = function create(properties) {
+                        return new GetDrawListResp(properties);
+                    };
+
+                    GetDrawListResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.records != null && m.records.length) {
+                            for (var i = 0; i < m.records.length; ++i)
+                                $root.com.cw.chess2.andarbahar.DrawInfo.encode(m.records[i], w.uint32(10).fork()).ldelim();
+                        }
+                        if (m.page != null && Object.hasOwnProperty.call(m, "page"))
+                            w.uint32(16).uint32(m.page);
+                        if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+                            w.uint32(24).uint32(m.pageSize);
+                        if (m.count != null && Object.hasOwnProperty.call(m, "count"))
+                            w.uint32(32).uint32(m.count);
+                        if (m.PageCount != null && Object.hasOwnProperty.call(m, "PageCount"))
+                            w.uint32(40).uint32(m.PageCount);
+                        if (m.ANum != null && Object.hasOwnProperty.call(m, "ANum"))
+                            w.uint32(48).uint32(m.ANum);
+                        if (m.BNum != null && Object.hasOwnProperty.call(m, "BNum"))
+                            w.uint32(56).uint32(m.BNum);
+                        if (m.statisticNum != null && Object.hasOwnProperty.call(m, "statisticNum"))
+                            w.uint32(64).uint32(m.statisticNum);
+                        return w;
+                    };
+
+                    GetDrawListResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetDrawListResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    if (!(m.records && m.records.length))
+                                        m.records = [];
+                                    m.records.push($root.com.cw.chess2.andarbahar.DrawInfo.decode(r, r.uint32()));
+                                    break;
+                                }
+                            case 2: {
+                                    m.page = r.uint32();
+                                    break;
+                                }
+                            case 3: {
+                                    m.pageSize = r.uint32();
+                                    break;
+                                }
+                            case 4: {
+                                    m.count = r.uint32();
+                                    break;
+                                }
+                            case 5: {
+                                    m.PageCount = r.uint32();
+                                    break;
+                                }
+                            case 6: {
+                                    m.ANum = r.uint32();
+                                    break;
+                                }
+                            case 7: {
+                                    m.BNum = r.uint32();
+                                    break;
+                                }
+                            case 8: {
+                                    m.statisticNum = r.uint32();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawListResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetDrawListResp";
+                    };
+
+                    return GetDrawListResp;
+                })();
+
+                andarbahar.GetDrawInfoReq = (function() {
+
+                    function GetDrawInfoReq(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawInfoReq.prototype.period = "";
+
+                    GetDrawInfoReq.create = function create(properties) {
+                        return new GetDrawInfoReq(properties);
+                    };
+
+                    GetDrawInfoReq.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.period != null && Object.hasOwnProperty.call(m, "period"))
+                            w.uint32(10).string(m.period);
+                        return w;
+                    };
+
+                    GetDrawInfoReq.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetDrawInfoReq();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.period = r.string();
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawInfoReq.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetDrawInfoReq";
+                    };
+
+                    return GetDrawInfoReq;
+                })();
+
+                andarbahar.GetDrawInfoResp = (function() {
+
+                    function GetDrawInfoResp(p) {
+                        if (p)
+                            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                                if (p[ks[i]] != null)
+                                    this[ks[i]] = p[ks[i]];
+                    }
+
+                    GetDrawInfoResp.prototype.record = null;
+
+                    GetDrawInfoResp.create = function create(properties) {
+                        return new GetDrawInfoResp(properties);
+                    };
+
+                    GetDrawInfoResp.encode = function encode(m, w) {
+                        if (!w)
+                            w = $Writer.create();
+                        if (m.record != null && Object.hasOwnProperty.call(m, "record"))
+                            $root.com.cw.chess2.andarbahar.DrawInfo.encode(m.record, w.uint32(10).fork()).ldelim();
+                        return w;
+                    };
+
+                    GetDrawInfoResp.decode = function decode(r, l) {
+                        if (!(r instanceof $Reader))
+                            r = $Reader.create(r);
+                        var c = l === undefined ? r.len : r.pos + l, m = new $root.com.cw.chess2.andarbahar.GetDrawInfoResp();
+                        while (r.pos < c) {
+                            var t = r.uint32();
+                            switch (t >>> 3) {
+                            case 1: {
+                                    m.record = $root.com.cw.chess2.andarbahar.DrawInfo.decode(r, r.uint32());
+                                    break;
+                                }
+                            default:
+                                r.skipType(t & 7);
+                                break;
+                            }
+                        }
+                        return m;
+                    };
+
+                    GetDrawInfoResp.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/com.cw.chess2.andarbahar.GetDrawInfoResp";
+                    };
+
+                    return GetDrawInfoResp;
                 })();
 
                 andarbahar.MsgChatReq = (function() {
@@ -2451,7 +3209,7 @@ export const com = $root.com = (() => {
 
                     GameUser.prototype.uid = 0;
                     GameUser.prototype.realUser = 0;
-                    GameUser.prototype.coin = 0;
+                    GameUser.prototype.coin = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
                     GameUser.prototype.userNick = "";
                     GameUser.prototype.userHead = "";
                     GameUser.prototype.userType = 0;
@@ -2477,7 +3235,7 @@ export const com = $root.com = (() => {
                         if (m.realUser != null && Object.hasOwnProperty.call(m, "realUser"))
                             w.uint32(16).uint32(m.realUser);
                         if (m.coin != null && Object.hasOwnProperty.call(m, "coin"))
-                            w.uint32(24).uint32(m.coin);
+                            w.uint32(24).int64(m.coin);
                         if (m.userNick != null && Object.hasOwnProperty.call(m, "userNick"))
                             w.uint32(34).string(m.userNick);
                         if (m.userHead != null && Object.hasOwnProperty.call(m, "userHead"))
@@ -2521,7 +3279,7 @@ export const com = $root.com = (() => {
                                     break;
                                 }
                             case 3: {
-                                    m.coin = r.uint32();
+                                    m.coin = r.int64();
                                     break;
                                 }
                             case 4: {
@@ -4112,6 +4870,7 @@ export const com = $root.com = (() => {
                     function AndarBaharLevelDesc(p) {
                         this.maxBets = [];
                         this.chips = [];
+                        this.odds = [];
                         if (p)
                             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
                                 if (p[ks[i]] != null)
@@ -4123,6 +4882,7 @@ export const com = $root.com = (() => {
                     AndarBaharLevelDesc.prototype.minChips = 0;
                     AndarBaharLevelDesc.prototype.maxBets = $util.emptyArray;
                     AndarBaharLevelDesc.prototype.chips = $util.emptyArray;
+                    AndarBaharLevelDesc.prototype.odds = $util.emptyArray;
 
                     AndarBaharLevelDesc.create = function create(properties) {
                         return new AndarBaharLevelDesc(properties);
@@ -4147,6 +4907,12 @@ export const com = $root.com = (() => {
                             w.uint32(42).fork();
                             for (var i = 0; i < m.chips.length; ++i)
                                 w.uint32(m.chips[i]);
+                            w.ldelim();
+                        }
+                        if (m.odds != null && m.odds.length) {
+                            w.uint32(50).fork();
+                            for (var i = 0; i < m.odds.length; ++i)
+                                w.float(m.odds[i]);
                             w.ldelim();
                         }
                         return w;
@@ -4193,6 +4959,17 @@ export const com = $root.com = (() => {
                                         m.chips.push(r.uint32());
                                     break;
                                 }
+                            case 6: {
+                                    if (!(m.odds && m.odds.length))
+                                        m.odds = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.odds.push(r.float());
+                                    } else
+                                        m.odds.push(r.float());
+                                    break;
+                                }
                             default:
                                 r.skipType(t & 7);
                                 break;
@@ -4216,6 +4993,7 @@ export const com = $root.com = (() => {
                     function AndarBaharDeskLevelDesc(p) {
                         this.maxBets = [];
                         this.chips = [];
+                        this.odds = [];
                         if (p)
                             for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
                                 if (p[ks[i]] != null)
@@ -4227,6 +5005,7 @@ export const com = $root.com = (() => {
                     AndarBaharDeskLevelDesc.prototype.minChips = 0;
                     AndarBaharDeskLevelDesc.prototype.maxBets = $util.emptyArray;
                     AndarBaharDeskLevelDesc.prototype.chips = $util.emptyArray;
+                    AndarBaharDeskLevelDesc.prototype.odds = $util.emptyArray;
 
                     AndarBaharDeskLevelDesc.create = function create(properties) {
                         return new AndarBaharDeskLevelDesc(properties);
@@ -4251,6 +5030,12 @@ export const com = $root.com = (() => {
                             w.uint32(42).fork();
                             for (var i = 0; i < m.chips.length; ++i)
                                 w.uint32(m.chips[i]);
+                            w.ldelim();
+                        }
+                        if (m.odds != null && m.odds.length) {
+                            w.uint32(50).fork();
+                            for (var i = 0; i < m.odds.length; ++i)
+                                w.float(m.odds[i]);
                             w.ldelim();
                         }
                         return w;
@@ -4295,6 +5080,17 @@ export const com = $root.com = (() => {
                                             m.chips.push(r.uint32());
                                     } else
                                         m.chips.push(r.uint32());
+                                    break;
+                                }
+                            case 6: {
+                                    if (!(m.odds && m.odds.length))
+                                        m.odds = [];
+                                    if ((t & 7) === 2) {
+                                        var c2 = r.uint32() + r.pos;
+                                        while (r.pos < c2)
+                                            m.odds.push(r.float());
+                                    } else
+                                        m.odds.push(r.float());
                                     break;
                                 }
                             default:

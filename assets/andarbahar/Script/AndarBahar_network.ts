@@ -115,7 +115,28 @@ export let AndarBahar_network = {
         let proto = net_data.net_struct_new_with_protobuf(serverType, cmd.CMD_C_GAME_GET_PLAYERS_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
-
+    sendGameBetRecordReq(page) {
+        let GameBetReq = awesomeRoot.com.cw.chess2.andarbahar.GetSelfRecordReq;
+        let payload = {
+            page: page,
+            pageSize: 15,
+        };
+        let message = GameBetReq.create(payload);
+        let buffer = GameBetReq.encode(message).finish();
+        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_DROGON_TIGER_, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_SELFRECORD_REQ, buffer);
+        this.send_net_raw_data(network.ws, proto);
+    },
+    sendGameHistoryReq(page) {
+        let GameBetReq = awesomeRoot.com.cw.chess2.andarbahar.GetDrawListReq;
+        let payload = {
+            page: page,
+            pageSize: 10,
+        };
+        let message = GameBetReq.create(payload);
+        let buffer = GameBetReq.encode(message).finish();
+        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_DROGON_TIGER_, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_DRAWLIST_REQ, buffer);
+        this.send_net_raw_data(network.ws, proto);
+    },
     // 请求聊天
     sendChatReq(chatType, typeValue1, typeValue2) {
         let MsgChatReq = ab_proto.MsgChatReq;

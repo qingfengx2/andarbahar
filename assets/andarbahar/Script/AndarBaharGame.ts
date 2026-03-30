@@ -2,8 +2,6 @@ import { _decorator, assetManager, Button, Canvas, Color, Component, find, game,
 import { ResizeAdapter } from '../../Script/ResizeAdapter';
 import { game_network } from '../../Script/network/game_network';
 import { AndarBahar_network } from './AndarBahar_network';
-
-// import * as awesomeRoot from '../../Script/proto/awesome';
 import * as awesomeRoot from '../../Script/proto/awesome.js'
 import { config } from '../../Script/util/config';
 import { ABCard } from './ABCard';
@@ -13,13 +11,28 @@ import { ABCardsTool } from './ABCardsTool';
 import { PrefabConst } from '../../Script/util/PrefabConst';
 import { music } from './AndarbaharMusic';
 import { AndarbaharManager } from './AndarbaharManager';
+import { toast_panel } from './toast_panel';
+import { gameLoading } from './gameLoading';
+import { PopupVIew } from './PopupVIew';
+import { GameMenu } from './GameMenu';
+import { gamePlayers } from './gamePlayers';
 const { ccclass, property } = _decorator;
 
 @ccclass('AndarBaharGame')
 export class AndarBaharGame extends Component {
+
+    @property({ type: Node, displayName: 'LoadingSprite' })
+    LoadingSprite: Node = null;
+
+    @property({ type: gameLoading, displayName: 'gameLoading' })
+    gameLoading: gameLoading = null;
+
     @property({ type: game_network, displayName: '网络组件' })
     node_network: game_network = null;
+    @property({ type: GameMenu, displayName: 'gameMenu' })
 
+
+    gameMenu: GameMenu = null;
     @property(Button)
     btn_rebet = null;
     @property(Button)
@@ -105,6 +118,10 @@ export class AndarBaharGame extends Component {
     @property(Prefab)
     star_prefab = null;
     coinLists = [];
+
+    @property({ type: toast_panel, displayName: 'toast_panel' })
+    toast_panel: toast_panel = null;
+
     private resizeAdapter = new ResizeAdapter(1080, 1920);
     coinTextureMaps = {}
     bundle = null;
@@ -132,13 +149,28 @@ export class AndarBaharGame extends Component {
         if (this.resizeAdapter.isRealPCBrowser()) {
             this.resizeAdapter.initResizeListener(this.node.getComponent(Canvas));
         }
-
+        this.LoadingSprite.active = true;
+        this.gameLoading.startLoading();
 
         this.loadBundle();
         this.getGateWays();
     }
+
+    clickMenuBtn() {
+        music.playMusic(music.Click);
+        if (this.gameMenu) {
+
+            this.gameMenu.playFadeIn();
+        }
+    }
+
     protected start(): void {
         music.playBgMusic(music.bgm, true, 0.5);
+    }
+
+    onClickOtherUser() {
+        music.playMusic(music.Click);
+        AndarBahar_network.sendGameGetPlayersReq();
     }
     getGateWays() {
 
@@ -935,8 +967,8 @@ export class AndarBaharGame extends Component {
         this.setRebetBtnState(data.repeatBet === 1);
     }
     showPanelRechargeTip(type, money = 0) {
-        let self = this;
-        let msg;
+
+        let msg = type;
         if (type === 100) {
             //余额不足
             msg = "The bet amount is not enough,Please add";
@@ -945,17 +977,23 @@ export class AndarBaharGame extends Component {
             msg = "You need Rs." + this.gameDesc.minChips / 100 + " at least to bet,Please add";
         } else if (type === 109) {
             console.log("余额不足，无法继续游戏");
-            //充值金额不够
-            // window.dialogManager.showPanelOPP(
-            //     comonFun.formatMoney(money),
-            //     function () {
-            //         self.onClickAddCashBtn();
-            //     }.bind(this),
-            //     function () { }
-            // );
-            // return;
+            msg = "Your balance is not enough for this bet,Please add Rs." + money / 100;
+        } else if (type === 103) {
+            msg = "Out of Maxbet limit for this area";
+        } else if (type === 104) {
+            msg = "Please wait for the betting stage";
+        } else if (type === 108) {
+            msg = "Invalid betting area";
+        } else if (type == 102) {
+            msg = "Invalid chip value"
+        } else if (type == 105) {
+            msg = "Server is down"
+        } else if (type == 107) {
+            msg = "Already in another game"
+        } else if (type == 106) {
+            msg = "Player not in room"
         }
-
+        this.toast_panel.toast(msg);
 
     }
     onBetRsp(data) {
@@ -1610,32 +1648,22 @@ export class AndarBaharGame extends Component {
                     let message = GameGetTableStatusResp.decode(proto.data);
 
                     console.log('获取桌子信息andarbahar游戏=========:[' + JSON.stringify(message) + ']');
-
                     this.process_table_status(message);
-                    // comonFun.removeGameLoading();
+                    this.LoadingSprite.active = false;
+                    this.gameLoading.stopLoading();
                 } else if (proto.protocol === cmd.CMD_C_GAME_LEAVE_RESP) { // 退出房间返回
                     let GameLeaveResp = awesomeRoot.com.cw.chess2.andarbahar.GameLeaveResp;
                     let message = GameLeaveResp.decode(proto.data);
 
                     console.log('获取退出andarbahar游戏=========:[' + JSON.stringify(message.result) + ']');
 
-                    // // 0: 成功; 100: 当前局有下注结束前不能退出, 101:连续5局未下注 102：服务器维护
-                    // if (message.result === 0) {
-                    //     config.isReconnectToGame = false;
-                    //     cc.director.loadScene("HallScene");
-                    // } else if (message.result === 100) {
-                    //     window.toastManager.toast("Can't leave table before settle");
-                    // } else if (message.result === 101) {
-                    //     config.isReconnectToGame = false;
-                    //     cc.director.loadScene("HallScene");
-                    // } else if (message.result === 102) {
-                    //     config.isReconnectToGame = false;
-                    //     window.toastManager.toast("The server is being maintained");
+                    AndarbaharManager.instance.openPanel('prefab/PopupVIew', (panelNode) => {
+                        const round_Details = panelNode.getComponent(PopupVIew);
+                        if (round_Details) {
+                            round_Details.initDataInView(message.result);
+                        }
+                    });
 
-                    //     setTimeout(() => {
-                    //         cc.director.loadScene("HallScene");
-                    //     }, 1500);
-                    // }
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_READY_NOTICE_RESP) { // 准备通知
                     this.gamePhase = gamePhase.PHS_GAME_READY;
@@ -1688,50 +1716,21 @@ export class AndarBaharGame extends Component {
                 } else if (proto.protocol === cmd.CMD_C_GAME_BET_RESP) { // 自己下注返回
                     let GameBetResp = andarbaharProto.GameBetResp;
                     let message = GameBetResp.decode(proto.data);
-
                     console.log('自己下注返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
-
                     if (message.result === 0) {
                         this.onBetRsp(message);
-
-                    } else if (message.result === 100) {
-                        this.showPanelRechargeTip(100);
-                    } else if (message.result === 101) {
-                        this.showPanelRechargeTip(101);
-                    } else if (message.result === 109) {
-                        this.showPanelRechargeTip(109, message.bet);
-                    } else if (message.result === 103) {
-                        this.showPanelRechargeTip("Out of Maxbet limit for this area");
-                    } else if (message.result === 104) {
-                        this.showPanelRechargeTip("Please wait for the betting stage");
                     } else {
-                        let result = message.result;
-                        console.log("下注不成功" + result)
+                        this.showPanelRechargeTip(message.result);
                     }
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_REPEAT_BET_RESP) { // 自己复投返回
                     let GameRepeatBetResp = andarbaharProto.GameRepeatBetResp;
                     let message = GameRepeatBetResp.decode(proto.data);
                     console.log('自己复投返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
-
                     if (message.result === 0) {
                         this.onRebetRsp(message);
-                    } else if (message.result === 100) {
-                        this.showPanelRechargeTip(100);
-                    } else if (message.result === 101) {
-                        this.showPanelRechargeTip(101);
-                    } else if (message.result === 109) {
-
-                        // this.showPanelRechargeTip(109, message.bet);
-                    } else if (message.result === 103) {
-                        this.showPanelRechargeTip("Out of Maxbet limit for this area");
-
-                    } else if (message.result === 104) {
-                        this.showPanelRechargeTip("Please wait for the betting stage");
-
                     } else {
-                        let result = message.result;
-                        console.log("下注不成功" + result)
+                        this.showPanelRechargeTip(message.result);
                     }
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_REPEAT_BET_NOTICE_RESP) { // 复投广播
@@ -1880,6 +1879,15 @@ export class AndarBaharGame extends Component {
                     console.log("收到互动道具消息", message);
 
                     // this.playPorpsMagic(message.tableId, message.sendUserId, message.toUserId, message.mogicId);
+                } else if (proto.protocol === cmd.CMD_C_GAME_GET_PLAYERS_RESP) {
+                    let gameGetPlayers = andarbaharProto.GameGetPlayersResp;
+                    let message = gameGetPlayers.decode(proto.data);
+                    AndarbaharManager.instance.openPanel('prefab/gamePlayers', (panelNode) => {
+                        const round_Details = panelNode.getComponent(gamePlayers);
+                        if (round_Details) {
+                            round_Details.initDataInView(message);
+                        }
+                    });
                 }
 
             } else if (proto.protocol === platform.ServerCommonCmd.CMD_SYSMESSAGE_TO_USER_RESP) {
