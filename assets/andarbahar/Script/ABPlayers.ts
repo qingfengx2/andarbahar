@@ -20,8 +20,9 @@ export class ABPlayers extends Component {
     public headPos = null;
 
     userId = null;
+    winLabelPosition: Vec3 = null;
     onLoad() {
-
+        this.winLabelPosition = this.winLabel.node.getPosition();
         this.updatePos();
     }
 
@@ -125,12 +126,12 @@ export class ABPlayers extends Component {
     }
 
     playWinAnim(nums: any) {
-        let pos = this.winLabel.node.getPosition();
-        this.winLabel.node.setPosition(pos.x, pos.y - 100);
+        // let pos = this.winLabel.node.getPosition();
+        this.winLabel.node.setPosition(this.winLabelPosition.x, this.winLabelPosition.y - 100);
         this.winLabel.string = "+" + (Number(nums) / 100);
         this.winLabel.node.active = true;
         tween(this.winLabel.node)
-            .to(0.8, { position: new Vec3(pos.x, pos.y, 0) })
+            .to(0.8, { position: new Vec3(this.winLabelPosition.x, this.winLabelPosition.y, 0) })
             .start();
     }
 

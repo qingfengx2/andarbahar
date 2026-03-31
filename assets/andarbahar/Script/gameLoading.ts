@@ -32,7 +32,7 @@ export class gameLoading extends Component {
     onEnable() {
         this.time = setTimeout(function () {
             this.stopLoading();
-        }.bind(this), 8000);
+        }.bind(this), 10000);
     }
 
     onDisable() {

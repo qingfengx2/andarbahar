@@ -85,10 +85,10 @@ export class ABCardsTool extends Component {
             this.bahar_more_node.active = false;
         }
     }
-    initCardsData(cardsInfo: awesome.com.cw.chess2.andarbahar.GameResultResp) {
-        this.cardsA = cardsInfo.cardsA;     //所有Andar 得牌
-        this.cardsB = cardsInfo.cardsB;     //所有Bahar 得牌
-        this.nums = cardsInfo.nums;
+    initCardsData(cardsA, cardsB, nums) {
+        this.cardsA = cardsA;     //所有Andar 得牌
+        this.cardsB = cardsB;     //所有Bahar 得牌
+        this.nums = nums;
     }
     cardMoreByNum(type, num, cardVal) {
         let arr = type == 1 ? this.andarArr : this.baharArr;
@@ -137,10 +137,58 @@ export class ABCardsTool extends Component {
             n++;
         }
     }
-    playTurnCardAnim(callback, result_node) {
-        let self = this;
+    showCards() {
+        let startA = this.cardsA.length <= 10 ? 10 - this.cardsA.length : 0;
+        let endA = 10;
+        let cardsValueA;
+        if (this.cardsA.length <= 10) {
+            cardsValueA = this.cardsA.slice(0, this.cardsA.length);
+        } else {
+            cardsValueA = this.cardsA.slice(this.cardsA.length - 10, this.cardsA.length);
+        }
+        let n = 0;
+        let node;
+        let cardVal;
+        for (let i = startA; i < endA; i++) {
+            node = this.andarCards[i];
+            if (node && cardsValueA[n] != null) {
+                node.active = true;
+                cardVal = cardsValueA[n];
 
-        let lblNums = result_node.getChildByName("lblNums").getComponent(Label);
+                let color = (cardVal & 0xf0) >> 4;
+                color++;
+                let value = cardVal & 0x0f;
+                node.getComponent(sp.Skeleton).addAnimation(0, `poker_L_B`, false);
+                node.getComponent(sp.Skeleton).setSkin(`${color * 100 + value}`);
+            }
+            n++;
+        }
+        let startB = this.cardsB.length <= 10 ? 10 - this.cardsB.length : 0;
+        let endB = 10;
+        let cardsValueB;
+        if (this.cardsB.length <= 10) {
+            cardsValueB = this.cardsB.slice(0, this.cardsB.length);
+        } else {
+            cardsValueB = this.cardsB.slice(this.cardsB.length - 10, this.cardsB.length);
+        }
+        n = 0;
+        for (let i = startB; i < endB; i++) {
+            node = this.baharCards[i];
+            if (node && cardsValueB[n] != null) {
+                node.active = true;
+                cardVal = cardsValueB[n];
+                let color = (cardVal & 0xf0) >> 4;
+                color++;
+                let value = cardVal & 0x0f;
+                node.getComponent(sp.Skeleton).addAnimation(0, `poker_R_B`, false);
+                node.getComponent(sp.Skeleton).setSkin(`${color * 100 + value}`);
+            }
+            n++;
+        }
+
+    }
+    playTurnCardAnim(callback) {
+        let self = this;
         let animFunc = function (index) {
             if (index < self.nums) {
                 let node;       //牌质体
@@ -184,11 +232,12 @@ export class ABCardsTool extends Component {
             } else {
                 setTimeout(() => {
                     // 翻牌翻完了
+                    console.log("翻牌翻完了");
                     if (callback) {
                         callback();
                     }
 
-                }, 600);
+                }, 300);
 
 
             }

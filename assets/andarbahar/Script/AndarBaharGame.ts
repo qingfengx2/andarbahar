@@ -1,4 +1,4 @@
-import { _decorator, assetManager, Button, Canvas, Color, Component, find, game, instantiate, Intersection2D, isValid, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, Sprite, SpriteFrame, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec3, view } from 'cc';
+import { _decorator, assetManager, Button, Canvas, Color, Component, easing, find, Game, game, instantiate, Intersection2D, isValid, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, sp, Sprite, SpriteFrame, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec2, Vec3, view } from 'cc';
 import { ResizeAdapter } from '../../Script/ResizeAdapter';
 import { game_network } from '../../Script/network/game_network';
 import { AndarBahar_network } from './AndarBahar_network';
@@ -9,6 +9,7 @@ import { PrefabPool } from '../../Script/util/PrefabPool';
 import { ABPlayers } from './ABPlayers';
 import { ABCardsTool } from './ABCardsTool';
 import { PrefabConst } from '../../Script/util/PrefabConst';
+import { network } from '../../Script/network/network';
 import { music } from './AndarbaharMusic';
 import { AndarbaharManager } from './AndarbaharManager';
 import { toast_panel } from './toast_panel';
@@ -16,12 +17,16 @@ import { gameLoading } from './gameLoading';
 import { PopupVIew } from './PopupVIew';
 import { GameMenu } from './GameMenu';
 import { gamePlayers } from './gamePlayers';
+import { hashPanel } from './hashPanel';
+import { roundDetails } from './roundDetails';
+import { panel_room_histroy_lhd } from './panel_room_histroy_lhd';
 const { ccclass, property } = _decorator;
 interface WinnerTargetInfo {
     node: Node;
     hasSeat: boolean;
     isSelf: boolean;
 }
+
 @ccclass('AndarBaharGame')
 export class AndarBaharGame extends Component {
 
@@ -34,9 +39,15 @@ export class AndarBaharGame extends Component {
     @property({ type: game_network, displayName: '网络组件' })
     node_network: game_network = null;
     @property({ type: GameMenu, displayName: 'gameMenu' })
-
-
     gameMenu: GameMenu = null;
+    @property({ type: hashPanel, displayName: 'hash_panel' })
+    hash_panel: hashPanel = null;
+    @property({ type: panel_room_histroy_lhd, displayName: 'room_road' })
+    room_road: panel_room_histroy_lhd = null;
+
+    @property({ type: sp.Skeleton, displayName: 'time_anim' })
+    time_anim: sp.Skeleton = null;
+
     @property(Button)
     btn_rebet = null;
     @property(Button)
@@ -149,21 +160,34 @@ export class AndarBaharGame extends Component {
     resultWinData = null;
     timeoutGameOver1 = null;
     win_pos_y = [0, 17.172, 28.398, 35.249, 42.137, 44.257, 42.858, 39.691, 33.66, 24.934];
+
+    result = "";
+    secretKey = "";
+    encryptKey = "";
+    encryptResult = "";
     onLoad() {
         if (this.resizeAdapter.isRealPCBrowser()) {
             this.resizeAdapter.initResizeListener(this.node.getComponent(Canvas));
         }
+        game.on(Game.EVENT_HIDE, this.paused, this);
         this.LoadingSprite.active = true;
         this.gameLoading.startLoading();
 
         this.loadBundle();
         this.getGateWays();
     }
-
+    onClickRoadBtn() {
+        music.playMusic(music.Click);
+        this.room_road.node.active = !this.room_road.node.active;
+        this.room_road.initDataInView(this.roadData, false);
+    }
+    onClickhash() {
+        music.playMusic(music.Click);
+        this.hash_panel.playFadeIn(this.secretKey, this.result, this.encryptKey, this.encryptResult);
+    }
     clickMenuBtn() {
         music.playMusic(music.Click);
         if (this.gameMenu) {
-
             this.gameMenu.playFadeIn();
         }
     }
@@ -203,6 +227,10 @@ export class AndarBaharGame extends Component {
 
         this.webSocketConnect(config.user_id, config.token);
 
+    }
+    paused() {
+        this.resetTable();
+        network.close();
     }
     webSocketConnect(uid, token) {
         console.log('websocket连接服务器:' + uid + ',' + token);
@@ -297,8 +325,7 @@ export class AndarBaharGame extends Component {
             //获取幸运星头像的位置
             let node = this.userPlayerTb[1];
             if (node) {
-                let startPos = find("Node/mask", node).getPosition();
-                // startPos = node.parent.convertToWorldSpaceAR(startPos);
+                let startPos = node.getPosition();
 
                 let star_node = this.star_arr[area];
                 if (star_node) {
@@ -317,6 +344,7 @@ export class AndarBaharGame extends Component {
             }
         }
     }
+
     hideAllCards() {
         if (this.cards_node) this.cards_node.getComponent(ABCardsTool).hideAllCards();
         this.centerCard.getComponent(ABCard).showBack();
@@ -396,11 +424,10 @@ export class AndarBaharGame extends Component {
             }
         }
 
-        Tween.stopAllByTag(1000);
+        // Tween.stopAllByTag(1000);
     }
     clearHeadBetAnim() {
         if (this.btn_players != null) {
-
             Tween.stopAllByTarget(this.btn_players.node);
         }
 
@@ -515,7 +542,7 @@ export class AndarBaharGame extends Component {
         }
     }
     onClickPlayerHead(data) {
-        console.log("点击玩家头像", data);
+        // console.log("点击玩家头像", data);
         // this.selectPlayId = data.getUserId();
         // data.updatePos();
         // game.emit("showPropsMagicPanel", data.headPos)
@@ -548,6 +575,11 @@ export class AndarBaharGame extends Component {
 
                     let node = instantiate(this.road_item_prefab);
                     let sp = node.getComponent(Sprite);
+
+                    node.addComponent(Button);
+                    node.on(Button.EventType.CLICK, () => {
+                        AndarBahar_network.sendGetDrawInfoReq(element.period);
+                    }, this);
                     // let lbl = node.getChildByName("label").getComponent(Label);
                     let sf = null;
                     if (winner === 1) {
@@ -590,7 +622,9 @@ export class AndarBaharGame extends Component {
             betsInfo = areaBets[i - 1];
             if (betsInfo) {
                 this.showBetLabelByType(i, betsInfo);
-                if (betsInfo.totalBalance) this.createBetsInPoolByType(i, betsInfo.totalBalance);
+                if (betsInfo.totalBalance) {
+                    this.createBetsInPoolByType(i, betsInfo.totalBalance);
+                }
             }
         }
     }
@@ -619,7 +653,7 @@ export class AndarBaharGame extends Component {
         //     spStr = "light_kuang";
         // }
 
-        lightSp.spriteFrame = this.coinTextureMaps[spStr];
+        // lightSp.spriteFrame = this.coinTextureMaps[spStr];
 
         this.coinLists.push(node);
 
@@ -628,13 +662,11 @@ export class AndarBaharGame extends Component {
     createBetsInPoolByType(type, bets) {
         this.timeoutCoinRandomPosTb = [];
         let betList = this.getSplitTotalBetsList(bets);
-
         //桌上筹码性能优化
         for (let index = 0; index < betList.length; index++) {
             let bet = betList[index];
             let node = this.getChipNode(bet, type);//桌上筹码性能优化
-            // let node = this.getInstant(bet, type);//桌上筹码性能优化
-            let pos = this.setRandomPositionByTypeWithNode(type, node);//桌上筹码性能优化
+            this.setRandomPositionByTypeWithNode(type, node);//桌上筹码性能优化
         }
     }
     randomFrom(startValue, endValue) {
@@ -646,12 +678,11 @@ export class AndarBaharGame extends Component {
         return Math.random() * (endValue - startValue) + startValue;
     }
     setRandomPositionByTypeWithNode(betType, node, startPos = null, fromNode = null) {
+
         let poolPanel = this.areaPoolArr[betType - 1];
 
         if (poolPanel === null || !node) return;
-
         poolPanel.addChild(node);
-
         // 随机生成一个坐标
         let uiTransform = poolPanel.getComponent(UITransform);
         let size = uiTransform.contentSize;
@@ -660,30 +691,81 @@ export class AndarBaharGame extends Component {
 
         let effectPos = [
             v3(0, 0, 0),
-            v3(-50, 0, 0),
-            v3(50, 0, 0),
-            v3(0, 40, 0),
-            v3(0, -40, 0),
+            v3(-30, 0, 0),
+            v3(30, 0, 0),
+            v3(0, 20, 0),
+            v3(0, -20, 0),
+            v3(-20, 20, 0),
+            v3(20, 20, 0),
+            v3(-20, -20, 0),
+            v3(20, -20, 0),
         ];
-
+        if (betType < 3) {
+            effectPos = [
+                v3(0, 0, 0),
+                v3(-100, 0, 0),
+                v3(100, 0, 0),
+                v3(-80, 0, 0),
+                v3(80, 0, 0),
+                v3(0, 80, 0),
+                v3(0, -80, 0),
+                v3(-60, 60, 0),
+                v3(60, 60, 0),
+                v3(-60, -60, 0),
+                v3(60, -60, 0),
+            ];
+        }
         let x = this.randomFrom(-width / 2, width / 2);
         let y = this.randomFrom(-height / 2, height / 2);
         let pos = v3(x, y, 0);
 
-        let worldPos = uiTransform.convertToWorldSpaceAR(pos);
+        let worldPos = uiTransform.convertToWorldSpaceAR(new Vec3(pos.x, pos.y, 0));
 
         let poolCollider = poolPanel.getComponent(PolygonCollider2D);
         let inFlag = null;
+        const minDistance = 36;
+        const maxTryCount = 18;
 
-        // 判断是否在不规则图形内
-        if (Intersection2D.pointInPolygon(v2(worldPos.x, worldPos.y), poolCollider.points)) {
+        const isTooClose = (targetPos: Vec3): boolean => {
+            let children = poolPanel.children;
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                if (child === node) continue;
+                const dx = child.position.x - targetPos.x;
+                const dy = child.position.y - targetPos.y;
+                if (dx * dx + dy * dy < minDistance * minDistance) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const getFallbackPos = (): Vec3 => {
+            const index = this.randomFrom(0, effectPos.length);
+            const basePos = effectPos[index];
+            const offsetX = this.randomFrom(-30, 31);
+            const offsetY = this.randomFrom(-30, 31);
+            return v3(basePos.x + offsetX, basePos.y + offsetY, 0);
+        };
+
+        if (Intersection2D.pointInPolygon(worldPos, poolCollider.points)) {
             inFlag = true;
         }
         if (inFlag === null) {
-            let a = this.randomFrom(0, effectPos.length - 1);
-            pos = effectPos[a];
+            pos = getFallbackPos();
         }
 
+        let tryCount = 0;
+        while (isTooClose(pos) && tryCount < maxTryCount) {
+            if (inFlag) {
+                const randomX = this.randomFrom(-width / 2, width / 2);
+                const randomY = this.randomFrom(-height / 2, height / 2);
+                pos = v3(randomX, randomY, 0);
+            } else {
+                pos = getFallbackPos();
+            }
+            tryCount++;
+        }
         if (startPos) {
             node.setPosition(startPos);
             node.angle = this.randomFrom(-180, 180);
@@ -693,7 +775,7 @@ export class AndarBaharGame extends Component {
                     if (fromNode != undefined) {
                         let lightNode = find("lightNode", node);
                         if (lightNode) {
-                            if (fromNode == this.mySelfNode) {
+                            if (fromNode == find("mask", this.mySelfNode)) {
                                 if (lightNode) {
                                     lightNode.active = true;
                                 }
@@ -711,7 +793,7 @@ export class AndarBaharGame extends Component {
                 )
                 .call(() => {
                     if (fromNode != undefined) {
-                        if (fromNode == this.mySelfNode) {
+                        if (fromNode == find("mask", this.mySelfNode)) {
                             music.playMusic(music.my_betchips, false, 0.6);
                         } else {
                             music.playMusic(music.other_betchips, false, 0.6);
@@ -797,6 +879,14 @@ export class AndarBaharGame extends Component {
     showLeftTime(time) {
         time = time < 0 ? 0 : time;
 
+        let animName = "alarm01";
+        if (time <= 3 && time > 0) {
+            animName = "alarm03";
+        } else if (time <= 5 && time > 3) {
+            animName = "alarm02";
+        }
+        this.time_anim.setAnimation(0, animName, true);
+
         if (this.lblCount != null) {
             this.lblCount.string = time;
         }
@@ -824,7 +914,11 @@ export class AndarBaharGame extends Component {
 
         this.gameDesc = message.desc;
         config.odds = message.desc.odds;
-        console.log("config.odds", config.odds);
+        config.odds.forEach((value, index) => {
+            let oddsLabel = this.betInfoArr[index].getChildByName("oddsLabel").getComponent(Label)
+            let str = index > 1 ? `${value / 100}X` : "1:" + `${value / 100}`;
+            oddsLabel.string = str;
+        })
         this.gamePhase = message.gamePhase;
         this.roadData = message.road;
         this.canRebet = message.repeatBet === 1;
@@ -837,7 +931,6 @@ export class AndarBaharGame extends Component {
         this.initPlayersData(message.chairs);
         this.initSelfData(message.self);
         this.showRoadDotView(true);
-
         if (message.gamePhase <= gamePhase.PHS_GAME_RESULT) {
             this.showBetsInfoByType(message.areaBets);
         }
@@ -862,13 +955,8 @@ export class AndarBaharGame extends Component {
             this.setRebetBtnState(false);
         }
 
-        if (message.gamePhase == gamePhase.PHS_GAME_READY) { //准备
 
-        } else if (message.gamePhase == gamePhase.PHS_GAME_START) { //开始
-            // this.showGamePhaseLabel("Start");
-        } else if (message.gamePhase == gamePhase.PHS_GAME_BETTING) { //下注
-            // this.showGamePhaseLabel("Betting");
-        } else if (message.gamePhase == gamePhase.PHS_GAME_RESULT) { //开奖
+        if (message.gamePhase == gamePhase.PHS_GAME_RESULT) { //开奖
             // this.showGamePhaseLabel("Show");
             let data = {
                 winner: message.winner,
@@ -876,6 +964,7 @@ export class AndarBaharGame extends Component {
                 nums: message.nums,
                 cardsA: message.cardsA,
                 cardsB: message.cardsB,
+
             }
 
             this.resultWinData = data;
@@ -888,6 +977,7 @@ export class AndarBaharGame extends Component {
                 nums: message.nums,
                 cardsA: message.cardsA,
                 cardsB: message.cardsB,
+
             }
             this.freshRoadData(data);
         }
@@ -973,34 +1063,29 @@ export class AndarBaharGame extends Component {
         this.setRebetBtnState(data.repeatBet === 1);
     }
     showPanelRechargeTip(type, money = 0) {
-
-        let msg = type;
-        if (type === 100) {
-            //余额不足
-            msg = "The bet amount is not enough,Please add";
-        } else if (type === 101) {
-            //低于允许下注最小额度
-            msg = "You need Rs." + this.gameDesc.minChips / 100 + " at least to bet,Please add";
-        } else if (type === 109) {
-            console.log("余额不足，无法继续游戏");
-            msg = "Your balance is not enough for this bet,Please add Rs." + money / 100;
-        } else if (type === 103) {
-            msg = "Out of Maxbet limit for this area";
-        } else if (type === 104) {
-            msg = "Please wait for the betting stage";
-        } else if (type === 108) {
-            msg = "Invalid betting area";
-        } else if (type == 102) {
-            msg = "Invalid chip value"
-        } else if (type == 105) {
-            msg = "Server is down"
-        } else if (type == 107) {
-            msg = "Already in another game"
-        } else if (type == 106) {
-            msg = "Player not in room"
+        let msg: string;
+        switch (type) {
+            case 100:
+                msg = "The bet amount is not enough, please add.";
+                break;
+            case 101:
+                msg = `You need Rs.${this.gameDesc.minChips / 100} at least to bet, please add.`;
+                break;
+            case 109:
+                msg = `Your balance is not enough for this bet, please add Rs.${money / 100}.`;
+                break;
+            case 103: msg = "Out of Maxbet limit for this area."; break;
+            case 104: msg = "Please wait for the betting stage."; break;
+            case 108: msg = "Invalid betting area."; break;
+            case 102: msg = "Invalid chip value."; break;
+            case 105: msg = "Server is down."; break;
+            case 107: msg = "Already in another game."; break;
+            case 106: msg = "Player not in room."; break;
+            default:
+                msg = `Unknown error: ${type}`;
         }
-        this.toast_panel.toast(msg);
 
+        this.toast_panel.toast(msg);
     }
     onBetRsp(data) {
         let type = data.index;
@@ -1010,12 +1095,12 @@ export class AndarBaharGame extends Component {
         };
         this.showBetLabelByType(type, betsInfo);
 
-        this.mySelfNode.getComponent("ABPlayers").updateMoney(data.balance);
+        this.mySelfNode.getComponent(ABPlayers).updateMoney(data.balance);
         this.myMoney = data.balance;
 
         // 当前下注
         let bet = data.bet;
-        this.sendCoinToTable(this.mySelfNode, type, bet);
+        this.sendCoinToTable(find("mask", this.mySelfNode), type, bet);
 
         // 下注了就不能复投了
         this.setRebetBtnState(false);
@@ -1043,7 +1128,7 @@ export class AndarBaharGame extends Component {
             const betData = list[index];
             let type = betData.index;
             let bet = betData.bet;
-            this.sendCoinToTable(this.mySelfNode, type, bet);
+            this.sendCoinToTable(find("mask", this.mySelfNode), type, bet);
         }
         console.log("onRebetRsp", data);
         // let dragonBet = data.totalDownBet;
@@ -1106,7 +1191,7 @@ export class AndarBaharGame extends Component {
             let _userId = player.getUserId();
             if (_userId === userId) {
                 // 飞金币出去
-                this.sendCoinToTable(playerNode, type, data.bet);
+                this.sendCoinToTable(find("Node/mask", playerNode), type, data.bet);
                 player.updateMoney(data.balance);
 
                 this.playHeadBetAnim(userId);
@@ -1168,22 +1253,22 @@ export class AndarBaharGame extends Component {
 
         let moveDiff = 60;
         let time = 0.1;
-        let pos = this.userPlayerHeadPosTb[chairIndex];
+        // let pos = this.userPlayerHeadPosTb[chairIndex];
         Tween.stopAllByTarget(headNode);
-
-        headNode.setPosition(pos);
+        let posHead = v3(0, 41.599, 0);
+        headNode.setPosition(posHead);
 
         if (chairIndex < 3) {
             tween(headNode)
-                .by(time, { position: v3(moveDiff, 0, 0) }, { easing: 'cubicIn' })
-                .by(time, { position: v3(-moveDiff, 0, 0) }, { easing: 'cubicIn' })
+                .to(time, { position: new Vec3(posHead.x + moveDiff, posHead.y, posHead.z) }, { easing: easing.sineIn })
+                .to(time, { position: new Vec3(posHead.x, posHead.y, posHead.z) }, { easing: easing.sineIn })
                 .start();
         }
 
         if (chairIndex >= 3) {
             tween(headNode)
-                .by(time, { position: v3(-moveDiff, 0, 0) }, { easing: 'cubicIn' })
-                .by(time, { position: v3(moveDiff, 0, 0) }, { easing: 'cubicIn' })
+                .to(time, { position: new Vec3(posHead.x - moveDiff, posHead.y, posHead.z) }, { easing: easing.sineIn })
+                .to(time, { position: new Vec3(posHead.x, posHead.y, posHead.z) }, { easing: easing.sineIn })
                 .start();
         }
     }
@@ -1201,14 +1286,14 @@ export class AndarBaharGame extends Component {
     initCardsData(cardsInfo) {
         if (this.cards_node) {
             let node = this.cards_node.getComponent(ABCardsTool);
-            node.initCardsData(cardsInfo);
+            node.initCardsData(cardsInfo.cardsA, cardsInfo.cardsB, cardsInfo.nums);
         }
     }
     playTurnCardAnim(callback) {
         if (this.cards_node) {
             this.result_node.active = true;
             let node = this.cards_node.getComponent(ABCardsTool);
-            node.playTurnCardAnim(callback, this.result_node);
+            node.playTurnCardAnim(callback);
         }
     }
     showLightAnim(type) {
@@ -1269,17 +1354,13 @@ export class AndarBaharGame extends Component {
         }
 
         if (this.win_node) {
-            if (type == 1) {
-                this.win_node.x = -207;
-                this.win_node.y = 63.55;
-            } else {
-                this.win_node.x = 207;
-                this.win_node.y = 63.55;
-            }
+            console.log("type = ", type);
+            let pos = type == 1 ? v3(-207, 63.55, 0) : v3(207, 63.55, 0);
+            this.win_node.setPosition(pos);
 
             this.win_node.active = true;
-            this.win_node.scale = 0;
-            tween(this.win_node).to(0.6, { scale: v3(1, 1, 1) }, { easing: "backOut" }).start();
+            this.win_node.setScale(v3(0, 0, 0));
+            tween(this.win_node).to(0.6, { scale: v3(1, 1, 1) }, { easing: easing.backOut }).start();
         }
     }
     getBetCoinListByValue(type, value) {
@@ -1320,6 +1401,21 @@ export class AndarBaharGame extends Component {
 
         return coinList;
     }
+    private getWinnerTargetNode(userId: any): WinnerTargetInfo {
+        if (this.isMySelf(userId)) {
+            return { node: this.mySelfNode, hasSeat: true, isSelf: true };
+        }
+        for (let i = 0; i < this.userPlayerTb.length; i++) {
+            const playerNode = this.userPlayerTb[i];
+            const player = playerNode.getComponent(ABPlayers);
+            if (player && player.getUserId() === userId) {
+                return { node: playerNode, hasSeat: true, isSelf: false };
+            }
+        }
+
+        return { node: this.btn_players.node, hasSeat: false, isSelf: false };
+    }
+
     sendCoinToSeat(dstNode, type, coinList, winnerTargetInfo: WinnerTargetInfo = null) {
         let pool = this.areaPoolArr[type - 1];
 
@@ -1342,7 +1438,7 @@ export class AndarBaharGame extends Component {
 
             tween(betCoin)
                 .delay(delayTime * index)
-                .to(totalTime, { position: endPos }, { easing: 'quadOut' })
+                .to(totalTime, { position: endPos }, { easing: easing.expoOut })
                 .call(() => {
                     if (betCoin.parent) {
                         betCoin.removeFromParent();
@@ -1361,6 +1457,7 @@ export class AndarBaharGame extends Component {
 
         music.playMusic(music.all_flygold);
     }
+
     onGameWinNoticeResp(winners, callback) {
         let self = this;
         const winnerList = Array.isArray(winners) ? winners : [];
@@ -1425,7 +1522,7 @@ export class AndarBaharGame extends Component {
 
                                 let coinList = self.getBetCoinListByValue(type, bets);
                                 // 飞金币
-                                self.sendCoinToSeat(self.mySelfNode, type, coinList);
+                                self.sendCoinToSeat(find("mask", this.mySelfNode), type, coinList);
                             }
                             music.playMusic(music.win);
                         }
@@ -1449,7 +1546,7 @@ export class AndarBaharGame extends Component {
 
                             let coinList = self.getBetCoinListByValue(type, bets);
                             if (isValid(winPlayerNode)) {
-                                self.sendCoinToSeat(winPlayerNode, type, coinList);
+                                self.sendCoinToSeat(find("Node/mask", winPlayerNode), type, coinList);
 
                             } else {
                                 console.error("数据错误，找不到seat上的人");
@@ -1619,9 +1716,8 @@ export class AndarBaharGame extends Component {
             return;
         }
         let platform = awesomeRoot.com.cw.chess2.platform;
-        // console.log('接收到消息:' + proto.type + ',' + proto.protocol);
         if (proto.type === platform.ServerType.SERVER_TYPE_AB) {
-            // console.log('接收到:' + proto.type + ',' + proto.protocol);
+
             if (proto.type === platform.ServerType.SERVER_TYPE_GATEWAY) {
                 //断线重连登录成功后，重新走进去游戏请求和获取桌子信息
                 if (proto.protocol === platform.ServerGatewayCmd.CMD_GATEWAY_LOGIN_RESP) {
@@ -1655,6 +1751,17 @@ export class AndarBaharGame extends Component {
                     this.process_table_status(message);
                     this.LoadingSprite.active = false;
                     this.gameLoading.stopLoading();
+                    config.currencyStr = message.currencyStr;
+                    this.encryptKey = message.encryptKey;
+                    this.encryptResult = message.encryptResult;
+                    this.secretKey = message.secretKey;
+                    if (message.gamePhase >= gamePhase.PHS_GAME_RESULT) {
+                        this.result = message.resultOriStr
+                        let node = this.cards_node.getComponent(ABCardsTool);
+                        node.initCardsData(message.cardsA, message.cardsB, message.nums);
+                        node.showCards();
+                    }
+
                 } else if (proto.protocol === cmd.CMD_C_GAME_GET_DRAWLIST_RESP) {
                     let GetDrawListResp = andarbaharProto.GetDrawListResp;
                     let message = GetDrawListResp.decode(proto.data);
@@ -1665,18 +1772,20 @@ export class AndarBaharGame extends Component {
 
                     let recordResp = andarbaharProto.GetSelfRecordResp;
                     let message = recordResp.decode(proto.data);
-                    console.log('下注数据andarbahar结果=========:[' + JSON.stringify(message) + ']');
+                    // console.log('下注数据andarbahar结果=========:[' + JSON.stringify(message) + ']');
                     this.gameMenu.openBetHistoryPanel(message);
                 } else if (proto.protocol === cmd.CMD_C_GAME_GET_DRAWINFO_RESP) {
                     let drawInfoResp = andarbaharProto.GetDrawInfoResp;
                     let message = drawInfoResp.decode(proto.data);
-                    // console.log('往期信息=========:[' + JSON.stringify(message) + ']');
-                    // AndarbaharManager.instance.openPanel('prefab/Round_Details', (panelNode) => {
-                    //     const round_Details = panelNode.getComponent(roundDetails);
-                    //     if (round_Details) {
-                    //         round_Details.initDataInView(message.record);
-                    //     }
-                    // });
+                    console.log('往期信息=========:[' + JSON.stringify(message) + ']');
+
+                    AndarbaharManager.instance.openPanel('prefab/RoundDetailsView', (panelNode) => {
+                        const round_Details = panelNode.getComponent(roundDetails);
+                        if (round_Details) {
+                            round_Details.initDataInView(message.record);
+                        }
+                    });
+
                 } else if (proto.protocol === cmd.CMD_C_GAME_LEAVE_RESP) { // 退出房间返回
                     let GameLeaveResp = awesomeRoot.com.cw.chess2.andarbahar.GameLeaveResp;
                     let message = GameLeaveResp.decode(proto.data);
@@ -1693,9 +1802,8 @@ export class AndarBaharGame extends Component {
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_READY_NOTICE_RESP) { // 准备通知
                     this.gamePhase = gamePhase.PHS_GAME_READY;
-                    console.log("准备通知")
+                    // console.log("准备通知")
                     this.resetTable();
-                    // this.showGamePhaseLabel("Start");
                 } else if (proto.protocol === cmd.CMD_C_GAME_START_NOTICE_RESP) { // 开始通知
                     this.gamePhase = gamePhase.PHS_GAME_START;
 
@@ -1736,13 +1844,20 @@ export class AndarBaharGame extends Component {
 
                     let GameBetNoticeResp = andarbaharProto.GameBetNoticeResp;
                     let message = GameBetNoticeResp.decode(proto.data);
-                    console.log("开始下注通知 == ", JSON.stringify(message))
+                    // console.log("开始下注通知 == ", JSON.stringify(message))
                     this.onGameBetNoticeResp(message);
-                    // this.showGamePhaseLabel("Betting");
+                    this.result = "";
+                    this.secretKey = "";
+                    this.encryptKey = message.encryptKey;
+                    this.encryptResult = message.encryptResult;
+                    if (this.hash_panel.node.active) {
+                        this.hash_panel.setData(this.secretKey, this.result, this.encryptKey, this.encryptResult);
+                    }
+
                 } else if (proto.protocol === cmd.CMD_C_GAME_BET_RESP) { // 自己下注返回
                     let GameBetResp = andarbaharProto.GameBetResp;
                     let message = GameBetResp.decode(proto.data);
-                    console.log('自己下注返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('自己下注返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     if (message.result === 0) {
                         this.onBetRsp(message);
                     } else {
@@ -1752,7 +1867,7 @@ export class AndarBaharGame extends Component {
                 } else if (proto.protocol === cmd.CMD_C_GAME_REPEAT_BET_RESP) { // 自己复投返回
                     let GameRepeatBetResp = andarbaharProto.GameRepeatBetResp;
                     let message = GameRepeatBetResp.decode(proto.data);
-                    console.log('自己复投返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('自己复投返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     if (message.result === 0) {
                         this.onRebetRsp(message);
                     } else {
@@ -1762,16 +1877,12 @@ export class AndarBaharGame extends Component {
                 } else if (proto.protocol === cmd.CMD_C_GAME_REPEAT_BET_NOTICE_RESP) { // 复投广播
                     let GameRepeatBetNoticeResp = andarbaharProto.GameRepeatBetNoticeResp;
                     let message = GameRepeatBetNoticeResp.decode(proto.data);
-                    console.log('复投广播返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('复投广播返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
                     this.onRebetNoticeRsp(message);
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_SYNC_BET_RESP) { // 同步下注(广播下注)
-                    // index
-                    // bet
-                    // total_bet
-                    // user_id
-                    // balance
+
                     let GameBettingNotify = andarbaharProto.GameBettingNotify;
                     let message = GameBettingNotify.decode(proto.data);
 
@@ -1793,24 +1904,25 @@ export class AndarBaharGame extends Component {
                     let GameResultResp = andarbaharProto.GameResultResp;
                     let message = GameResultResp.decode(proto.data);
 
-                    console.log('开奖返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('开奖返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
                     this.initCardsData(message);
-                    // // 先红方
-                    // // 再黑方
-                    // // 再闪
 
-                    // // 再派彩 先系统收输的，然后再分发到玩家赢得，                                            
-
-                    // // 将结果加在roadData
                     let data = {
                         winner: message.winner,
                         joker: message.joker,
                         nums: message.nums,
                         cardsA: message.cardsA,
                         cardsB: message.cardsB,
+                        period: message.period,
                     };
                     this.resultWinData = data;
+
+                    this.secretKey = message.secretKey;
+                    this.result = message.resultOriStr
+                    if (this.hash_panel.node.active) {
+                        this.hash_panel.setData(this.secretKey, this.result, this.encryptKey, this.encryptResult);
+                    }
 
                     let self = this;
                     let func = function () {
@@ -1833,11 +1945,10 @@ export class AndarBaharGame extends Component {
                     this.hidePlayerWinAnim();
                     this.clearAllTimer();
 
-
                     let GameWinNoticeResp = andarbaharProto.GameWinNoticeResp;
                     let message = GameWinNoticeResp.decode(proto.data);
 
-                    console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     let self = this;
                     let callback = function () {
                         self.playAddRoadAnim();
@@ -1847,20 +1958,15 @@ export class AndarBaharGame extends Component {
 
                     // 再派彩 先系统收输的，然后再分发到玩家赢得，                                            
                     this.onGameWinNoticeResp(message.winners, callback);
-
-
-
                     this.freshRoadData(this.resultWinData);
 
-                    // if (isValid(this.PanelHistory)) {
-                    //     this.PanelHistory.getComponent("ABHistory").initDataInView(this.roadData);
-                    // }
+                    this.room_road.initDataInView(this.roadData);
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_SYNC_CHAIR_RESP) { // 同步桌上的人
                     let GameSyncChairResp = andarbaharProto.GameSyncChairResp;
                     let message = GameSyncChairResp.decode(proto.data);
 
-                    console.log('同步桌上的人andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('同步桌上的人andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
                     this.onGameSyncChairResp(message.chairs);
 
@@ -1868,7 +1974,7 @@ export class AndarBaharGame extends Component {
                     let GameSyncPlayerCountResp = andarbaharProto.GameSyncPlayerCountResp;
                     let message = GameSyncPlayerCountResp.decode(proto.data);
 
-                    console.log('同步桌上的总人数andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('同步桌上的总人数andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
                     this.freshPlayerCount(message.count);
 
@@ -1876,23 +1982,23 @@ export class AndarBaharGame extends Component {
                     let GameNoBetNoticeResp = andarbaharProto.GameNoBetNoticeResp;
                     let message = GameNoBetNoticeResp.decode(proto.data);
 
-                    console.log('连续未下注通知 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('连续未下注通知 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
-                    // if (message.count >= 3) {
-                    //     window.toastManager.toast("No bet in last 5 rounds will leave table automatically");
-                    // }
+                    if (message.count >= 3) {
+                        this.toast_panel.toast("No bet in last 3 rounds will leave table automatically");
+                    }
 
                 } else if (proto.protocol === cmd.CMD_C_GAME_SYNC_BALANCE_RESP) { // 同步余额
                     let GameSyncBalanceResp = andarbaharProto.GameSyncBalanceResp;
                     let message = GameSyncBalanceResp.decode(proto.data);
 
-                    console.log('同步余额 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('同步余额 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     let balance = message.balance;
                     this.mySelfNode.getComponent(ABPlayers).updateMoney(balance);
                     // this.refreshBankrutcy(balance);
                 } else if (proto.protocol === cmd.CMD_C_CHAT_RESP) { // 聊天
-                    let MsgChatResp = andarbaharProto.MsgChatResp;
-                    let message = MsgChatResp.decode(proto.data);
+                    // let MsgChatResp = andarbaharProto.MsgChatResp;
+                    // let message = MsgChatResp.decode(proto.data);
 
                     // console.log('聊天返回 弹幕 andarbahar游戏=========:[' + JSON.stringify(message) + ']');
 
@@ -1942,7 +2048,7 @@ export class AndarBaharGame extends Component {
         }
     }
     _onTouchBegin(touch, event) {
-        console.log("touch start");
+        // console.log("touch start");
         const location = touch.getUILocation();
         const worldPos = v3(location.x, location.y, 0);
 

@@ -26,6 +26,7 @@ export class roundDetails extends Component {
     AndarCards: Node = null;
 
     initDataInView(data) {
+        if (!data) return
         this.title.string = `${data.period}`;
 
 

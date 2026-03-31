@@ -47,7 +47,11 @@ var client_network = {
         // console.log(str);
 
         if (ws != null)
-            ws.send(buf);
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(buf);
+            } else {
+                console.error(`WebSocket is not open. Current state: ${ws.readyState}`);
+            }
         else
             console.log('发送失败，ws=null');
     },

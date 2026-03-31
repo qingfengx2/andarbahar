@@ -1,4 +1,3 @@
-
 import * as awesomeRoot from "../../Script/proto/awesome.js";
 import { network } from "../../Script/network/network";
 import { net_data } from "../../Script/network/net_data";
@@ -47,12 +46,17 @@ export let AndarBahar_network = {
             str += '0x' + (buf[i]).toString(16) + ' ';
         }
 
-        console.log(str);
+        // console.log(str);
 
-        if (ws != null)
-            ws.send(buf);
-        else
+        if (ws != null) {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.send(buf);
+            } else {
+                console.error(`WebSocket is not open. Current state: ${ws.readyState}`);
+            }
+        } else {
             console.log('发送失败，ws=null');
+        }
     },
 
     sendGameEnterReq() {
@@ -124,7 +128,7 @@ export let AndarBahar_network = {
         console.log('请求记录数据=========:[' + JSON.stringify(payload) + ']');
         let message = GameBetReq.create(payload);
         let buffer = GameBetReq.encode(message).finish();
-        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_SELFRECORD_REQ, buffer);
+        let proto = net_data.net_struct_new_with_protobuf(serverType, cmd.CMD_C_GAME_GET_SELFRECORD_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
     sendGameHistoryReq(page) {
@@ -136,7 +140,7 @@ export let AndarBahar_network = {
         console.log('请求历史记录数据=========:[' + JSON.stringify(payload) + ']');
         let message = GameBetReq.create(payload);
         let buffer = GameBetReq.encode(message).finish();
-        let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_GET_DRAWLIST_REQ, buffer);
+        let proto = net_data.net_struct_new_with_protobuf(serverType, cmd.CMD_C_GAME_GET_DRAWLIST_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
     // 请求聊天
@@ -161,7 +165,16 @@ export let AndarBahar_network = {
         let proto = net_data.net_struct_new_with_protobuf(serverType, cmd.CMD_C_CHAT_REQ, buffer);
         this.send_net_raw_data(network.ws, proto);
     },
-
+    sendGetDrawInfoReq(period) {
+        let GetDrawInfoReq = awesomeRoot.com.cw.chess2.andarbahar.GetDrawInfoReq;
+        let payload = {
+            period: period,
+        };
+        let message = GetDrawInfoReq.create(payload);
+        let buffer = GetDrawInfoReq.encode(message).finish();
+        let proto = net_data.net_struct_new_with_protobuf(serverType, cmd.CMD_C_GAME_GET_DRAWINFO_REQ, buffer);
+        this.send_net_raw_data(network.ws, proto);
+    },
     // 请求发送互动道具
     sendMagicChatReq(sendUserId, toUserId, mogicId) {
         let MsgChatReq = awesomeRoot.com.cw.chess2.platform.MsgMagicChatReq;

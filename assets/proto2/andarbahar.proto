@@ -6,15 +6,15 @@ package com.cw.chess2.andarbahar;
 
 
 enum AndarBahar_S_Cmd{
-	CMD_S_INVALID						= 0;
-	CMD_S_PING							= 1;
-	CMD_S_PONG							= 2;
+  CMD_S_INVALID = 0;
+  CMD_S_PING = 1;
+  CMD_S_PONG = 2;
 }
 
 /* 注：后续所有协议全部采用“tableid+子结构”形式，包括请求和回复*/
 message TableData{
-	uint32 table_id = 1;
-	bytes data = 2;
+  uint32 table_id = 1;
+  bytes data = 2;
 }
 /* 例如：解开一个通用请求
 TableData table_data;
@@ -28,83 +28,90 @@ message MSG_C_COMMON_REQ{
 }
 // 通用服务端返回
 message MSG_C_COMMON_RESP{
-	uint32 result = 2;			// 0：正常
+  uint32 result = 2;      // 0：正常
 }
 
 
 /***********************************AB百人游戏客户端和服务端通信定义 开始*********************************/
 
 enum AndarBaharCmd{
-	CMD_C_INVALID						= 0;    // 无意义
-	CMD_C_GAME_ENTER_REQ                = 1;    // 进入房间请求 GameEnterReq
-	CMD_C_GAME_ENTER_RESP               = 2;    // 进入房间回复 GameEnterResp
-	CMD_C_GAME_GET_TABLE_STATUS_REQ		= 3;	// 游戏数据请求: 此协议应该在客户端资源加载完成后请求（通常为刚进游戏，进入房间成功/断线重连) GameGetTableStatusReq
-	CMD_C_GAME_GET_TABLE_STATUS_RESP	= 4;	// 游戏数据回复: 断线重连也是这条协议 GameGetTableStatusResp
-	CMD_C_GAME_BET_REQ                  = 5;    // 下注请求 GameBetReq
-	CMD_C_GAME_BET_RESP                 = 6;    // 下注回复 GameBetResp
-	CMD_C_GAME_REPEAT_BET_REQ           = 7;    // 复投请求 GameRepeatBetReq
-	CMD_C_GAME_REPEAT_BET_RESP          = 8;    // 复投回复 GameRepeatBetResp
-	CMD_C_GAME_LEAVE_REQ                = 9;    // 退出房间请求 GameLeaveReq
-	CMD_C_GAME_LEAVE_RESP               = 10;   // 退出房间回复: 玩家被踢, 房间关闭时都加收到此协议  GameLeaveResp
-	CMD_C_GAME_READY_NOTICE_RESP        = 12;   // 准备通知 GameReadyNoticeResp
-	CMD_C_GAME_START_NOTICE_RESP        = 14;   // 开始通知 GameStartNoticeResp
-	CMD_C_GAME_BET_NOTICE_RESP          = 16;   // 下注通知 GameBetNoticeResp
-	CMD_C_GAME_SHOW_RESULT_RESP         = 18;   // 开奖; GameResultResp
-	CMD_C_GAME_SETTLE_NOTICE_RESP       = 20;   // 派彩通知 GameWinNoticeResp
-	CMD_C_GAME_GET_PLAYERS_REQ          = 21;   // 获取玩家列表请求 GameGetPlayersReq
-	CMD_C_GAME_GET_PLAYERS_RESP         = 22;   // 获取玩家列表回复 GameGetPlayersResp
-	CMD_C_GAME_SYNC_CHAIR_RESP          = 24;   // 同步桌上的人 GameSyncChairResp
-	CMD_C_GAME_SYNC_BET_RESP            = 26;   // 同步下注(广播下注) GameSyncBetResp
-	CMD_C_GAME_SYNC_PLAYER_COUNT_RESP   = 28;   // 同步总人数 GameSyncPlayerCountResp
-	CMD_C_GAME_REPEAT_BET_NOTICE_RESP   = 30;   // 复投广播
-	CMD_C_GAME_NO_BET_NOTICE_RESP       = 32;   // 连续未下注通知
-	CMD_C_GAME_SYNC_BALANCE_RESP        = 34;   // 同步余额
-	
-	CMD_C_CHAT_REQ						= 62;		// 用户请求聊天：MSG_C_CHAT_REQ
-	CMD_C_CHAT_RESP						= 63;		// 用户请求聊天回复：MSG_C_CHAT_RESP
-	
-	CMD_C_MATCH_FINISH_REQ				= 100;	// 无意义
-	CMD_C_MATCH_FINISH_RESP				= 101;	// 桌子被解散：MSG_C_MATCH_FINISH_RESP
-	CMD_C_GET_TABLE_EMPTY_REQ       	= 102;  // 无意义
-	CMD_C_GET_TABLE_EMPTY_RESP      	= 103;  // 找不到桌子(重连时，有可能会收到此协议，客户端跳转到大厅)
-	CMD_C_CAN_UPDATE_BALANCE_REQ      	= 200;	// 大厅服通知，可以更新余额(客户端不要用)
+  CMD_C_INVALID = 0;    // 无意义
+  CMD_C_GAME_ENTER_REQ = 1;    // 进入房间请求 GameEnterReq
+  CMD_C_GAME_ENTER_RESP = 2;    // 进入房间回复 GameEnterResp
+  CMD_C_GAME_GET_TABLE_STATUS_REQ = 3;  // 游戏数据请求: 此协议应该在客户端资源加载完成后请求（通常为刚进游戏，进入房间成功/断线重连) GameGetTableStatusReq
+  CMD_C_GAME_GET_TABLE_STATUS_RESP = 4;  // 游戏数据回复: 断线重连也是这条协议 GameGetTableStatusResp
+  CMD_C_GAME_BET_REQ = 5;    // 下注请求 GameBetReq
+  CMD_C_GAME_BET_RESP = 6;    // 下注回复 GameBetResp
+  CMD_C_GAME_REPEAT_BET_REQ = 7;    // 复投请求 GameRepeatBetReq
+  CMD_C_GAME_REPEAT_BET_RESP = 8;    // 复投回复 GameRepeatBetResp
+  CMD_C_GAME_LEAVE_REQ = 9;    // 退出房间请求 GameLeaveReq
+  CMD_C_GAME_LEAVE_RESP = 10;   // 退出房间回复: 玩家被踢, 房间关闭时都加收到此协议  GameLeaveResp
+  CMD_C_GAME_READY_NOTICE_RESP = 12;   // 准备通知 GameReadyNoticeResp
+  CMD_C_GAME_START_NOTICE_RESP = 14;   // 开始通知 GameStartNoticeResp
+  CMD_C_GAME_BET_NOTICE_RESP = 16;   // 下注通知 GameBetNoticeResp
+  CMD_C_GAME_SHOW_RESULT_RESP = 18;   // 开奖; GameResultResp
+  CMD_C_GAME_SETTLE_NOTICE_RESP = 20;   // 派彩通知 GameWinNoticeResp
+  CMD_C_GAME_GET_PLAYERS_REQ = 21;   // 获取玩家列表请求 GameGetPlayersReq
+  CMD_C_GAME_GET_PLAYERS_RESP = 22;   // 获取玩家列表回复 GameGetPlayersResp
+  CMD_C_GAME_SYNC_CHAIR_RESP = 24;   // 同步桌上的人 GameSyncChairResp
+  CMD_C_GAME_SYNC_BET_RESP = 26;   // 同步下注(广播下注) GameSyncBetResp
+  CMD_C_GAME_SYNC_PLAYER_COUNT_RESP = 28;   // 同步总人数 GameSyncPlayerCountResp
+  CMD_C_GAME_REPEAT_BET_NOTICE_RESP = 30;   // 复投广播
+  CMD_C_GAME_NO_BET_NOTICE_RESP = 32;   // 连续未下注通知
+  CMD_C_GAME_SYNC_BALANCE_RESP = 34;   // 同步余额
+
+  CMD_C_GAME_GET_SELFRECORD_REQ = 41;   // 获取个人投注记录信息请求 GetSelfRecordReq
+  CMD_C_GAME_GET_SELFRECORD_RESP = 42;   // 获取个人投注记录信息回复 GetSelfRecordResp
+  CMD_C_GAME_GET_DRAWLIST_REQ = 43;   // 获取开奖历史请求请求 GetDrawListReq
+  CMD_C_GAME_GET_DRAWLIST_RESP = 44;   // 获取开奖历史请求回复 GetDrawListResp
+  CMD_C_GAME_GET_DRAWINFO_REQ = 45;   // 获取某期开奖信息请求 GetDrawInfoReq
+  CMD_C_GAME_GET_DRAWINFO_RESP = 46;   // 获取某期开奖信息请求回复 GetDrawInfoResp
+
+  CMD_C_CHAT_REQ = 62;    // 用户请求聊天：MSG_C_CHAT_REQ
+  CMD_C_CHAT_RESP = 63;    // 用户请求聊天回复：MSG_C_CHAT_RESP
+
+  CMD_C_MATCH_FINISH_REQ = 100;  // 无意义
+  CMD_C_MATCH_FINISH_RESP = 101;  // 桌子被解散：MSG_C_MATCH_FINISH_RESP
+  CMD_C_GET_TABLE_EMPTY_REQ = 102;  // 无意义
+  CMD_C_GET_TABLE_EMPTY_RESP = 103;  // 找不到桌子(重连时，有可能会收到此协议，客户端跳转到大厅)
+  CMD_C_CAN_UPDATE_BALANCE_REQ = 200;  // 大厅服通知，可以更新余额(客户端不要用)
 }
 
 // 定义游戏阶段
 enum GamePhase {
-    PHS_INVALID           = 0;   // 无效
-    PHS_GAME_READY 		  = 1;	 // 准备
-    PHS_GAME_START        = 2;   // 开始
-    PHS_GAME_BETTING      = 3;   // 下注
-    PHS_GAME_RESULT       = 4;   // 开奖
-    PHS_GAME_SETTLE 	  = 5;	 // 派奖
+  PHS_INVALID = 0;   // 无效
+  PHS_GAME_READY = 1;   // 准备
+  PHS_GAME_START = 2;   // 开始
+  PHS_GAME_BETTING = 3;   // 下注
+  PHS_GAME_RESULT = 4;   // 开奖
+  PHS_GAME_SETTLE = 5;   // 派奖
 }
 
 message BetData {
-    uint32 index    = 1;    // 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 bet      = 2;    // 下注额度
+  uint32 index = 1;    // 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  int64 bet = 2;    // 下注额度
 }
 
 message UserBetList {
-    uint32 user_id          = 1;        // 用户ID
-    repeated BetData bets   = 2;        // 下注列表
+  uint32 user_id = 1;        // 用户ID
+  repeated BetData bets = 2;        // 下注列表
 }
 
 // 座位数据
 message ChairStatus{
-	uint32 b_user                           = 1;    // 此座位是否有人：0：没有人；1：有人
-	uint32 chair_index 					    = 2;	// 座位号：0/1/2/3/4/5   六个席位:如果空了，就补
-	com.cw.chess2.platform.GameUser user 	= 3;	// 座位上的用户
+  uint32 b_user = 1;    // 此座位是否有人：0：没有人；1：有人
+  uint32 chair_index = 2;  // 座位号：0/1/2/3/4/5   六个席位:如果空了，就补
+  com.cw.chess2.platform.GameUser user = 3;  // 座位上的用户
 }
 
 message AreaBet {
-    uint32 total_balance    = 1;  // 总下注
-    uint32 owner_balance    = 2;  // 个人下注
+  int64 total_balance = 1;  // 总下注
+  int64 owner_balance = 2;  // 个人下注
 }
 
 message RoadData {
-    uint32 winner   		= 1;    // 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 nums				= 2;	// 牌数量
+  uint32 winner = 1;    // 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  uint32 nums = 2;  // 牌数量
 }
 
 // 获取桌子信息
@@ -113,23 +120,28 @@ message GameGetTableStatusReq {
 
 // 桌子的全部信息
 message GameGetTableStatusResp {
-	com.cw.chess2.platform.AndarBaharLevelDesc desc        	= 1;	// 桌子静态数据
-	string round_id 										= 2;	// 本局牌局ID
-	GamePhase game_phase 									= 3;	// 游戏进度状态
-	uint32 time_count 										= 4;	// 总倒计时间
-	uint32 time_limit 										= 5;	// 剩余倒计时间
-	repeated ChairStatus chairs 							= 6;	// 座位属性
-	com.cw.chess2.platform.GameUser self                    = 7;    // 自己的属性
-	repeated AreaBet areaBets								= 8;	// 各个区域下注额,依次为1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
-	repeated UserBetList bet_list                           = 9;    // 所有玩家的下注列表
-	repeated RoadData road                                  = 10;   // 路单
-	uint32  repeat_bet                                      = 11;   // 是否可以复投 0 不可以 1 可以
-	uint32  player_count                                    = 12;   // 总人数
-	uint32 winner                                           = 13;   // 开奖或结算阶段 胜方:  1 A;  2 B; 
-	uint32 joker											= 14;    // Joker 牌
-	uint32 nums												= 15;	// 牌数量 side1-8
-	repeated uint32 cardsA   								= 16;   // 牌值A 数组
-	repeated uint32 cardsB   								= 17;   // 牌值B 数组
+  com.cw.chess2.platform.AndarBaharLevelDesc desc = 1;  // 桌子静态数据
+  string round_id = 2;  // 本局牌局ID
+  GamePhase game_phase = 3;  // 游戏进度状态
+  uint32 time_count = 4;  // 总倒计时间
+  uint32 time_limit = 5;  // 剩余倒计时间
+  repeated ChairStatus chairs = 6;  // 座位属性
+  com.cw.chess2.platform.GameUser self = 7;    // 自己的属性
+  repeated AreaBet areaBets = 8;  // 各个区域下注额,依次为1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
+  repeated UserBetList bet_list = 9;    // 所有玩家的下注列表
+  repeated RoadData road = 10;   // 路单
+  uint32  repeat_bet = 11;   // 是否可以复投 0 不可以 1 可以
+  uint32  player_count = 12;   // 总人数
+  uint32 winner = 13;   // 开奖或结算阶段 胜方:  1 A;  2 B;
+  uint32 joker = 14;    // Joker 牌
+  uint32 nums = 15;  // 牌数量 side1-8
+  repeated uint32 cardsA = 16;   // 牌值A 数组
+  repeated uint32 cardsB = 17;   // 牌值B 数组
+  string secretKey = 18;//随机密钥 下注状态未公开 为空
+  string encryptKey = 19;//sha512加密过的随机密钥 sha512(secretKey)
+  string encryptResult = 20;//sha512加密过的结果 sha512(joker+secretKey+cardsA+cardsB)
+  string currencyStr = 21;//货币字符串标识
+  string resultOriStr = 22;//结果加密原始串(joker+cards_A+cards_B)
 }
 
 // 重连时找不到桌子的返回
@@ -142,32 +154,32 @@ message GameEnterReq {
 
 // 进入房间回复
 message GameEnterResp {
-    uint32 result = 1;			// 0：正常 100: 人满为患 101 服务器正在维护 102 已经在房间中
+  uint32 result = 1;      // 0：正常 100: 人满为患 101 服务器正在维护 102 已经在房间中
 }
 
 // 下注请求
 message GameBetReq {
-    uint32 index    = 1;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 bet      = 2;    // 当前的下注额度
+  uint32 index = 1;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  int64 bet = 2;    // 当前的下注额度
 }
 
 // 下注返回
 message GameBetResp {
-    uint32 result       = 1;    // 0: 成功; 100: 余额不足; 101: 低于允许下注最小额度; 102 筹码不对; 103 当前区域总下注额超过最大下注额度; 104 不在下注阶段; 105 服务器关服; 106 玩家不在房间内(这种情况，是服务器与客户不同步导致的); 107 在其它游戏内 108 下注区域不对
-    uint32 index        = 2;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 bet          = 3;    // 当前的下注额度
-    uint32 my_bet       = 4;    // 我在该区域的下注的额度
-    uint32 total_bet    = 5;    // 该区域总的下注额度
-    uint32 balance      = 6;    // 余额
+  uint32 result = 1;    // 0: 成功; 100: 余额不足; 101: 低于允许下注最小额度; 102 筹码不对; 103 当前区域总下注额超过最大下注额度; 104 不在下注阶段; 105 服务器关服; 106 玩家不在房间内(这种情况，是服务器与客户不同步导致的); 107 在其它游戏内 108 下注区域不对
+  uint32 index = 2;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  int64 bet = 3;    // 当前的下注额度
+  int64 my_bet = 4;    // 我在该区域的下注的额度
+  int64 total_bet = 5;    // 该区域总的下注额度
+  int64 balance = 6;    // 余额
 }
 
 // 下注通知
 message GameBettingNotify {
-    uint32 index        = 1;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 bet          = 2;    // 当前的下注额度
-    uint32 total_bet    = 3;    // 下注值
-    uint32 user_id      = 4;    // 用户ID
-    uint32 balance      = 5;    // 余额
+  uint32 index = 1;    // 下注哪方 方位: 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  int64 bet = 2;    // 当前的下注额度
+  int64 total_bet = 3;    // 下注值
+  uint32 user_id = 4;    // 用户ID
+  int64 balance = 5;    // 余额
 }
 
 // 复投请示
@@ -177,18 +189,18 @@ message GameRepeatBetReq {
 
 // 复投广播
 message GameRepeatBetNoticeResp {
-    uint32 user_id          	= 1;    // ID
-    uint32 balance          	= 2;    // 余额
-    repeated uint32 areaBets	= 3;	// 各个区域下注额,依次为1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
-    repeated BetData list   	= 4;    // 下注列表
+  uint32 user_id = 1;    // ID
+  int64 balance = 2;    // 余额
+  repeated uint32 areaBets = 3;  // 各个区域下注额,依次为 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  repeated BetData list = 4;    // 下注列表
 }
 
 // 复投回复
 message GameRepeatBetResp {
-    uint32 result           	= 1;    // 0: 成功; 100: 余额不足; 101: 低于允许下注最小额度; 102: 不可复投(已单独投了) 103: 不可复投(没有列表） 102与103都是因为同步不及时的导致; 104 不在投注阶段; 105 服务器关服
-    uint32 balance          	= 2;    // 余额
-    repeated AreaBet areaBets	= 3;	// 各个区域下注额,依次为1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
-    repeated BetData list   	= 4;    // 下注列表
+  uint32 result = 1;    // 0: 成功; 100: 余额不足; 101: 低于允许下注最小额度; 102: 不可复投(已单独投了) 103: 不可复投(没有列表） 102与103都是因为同步不及时的导致; 104 不在投注阶段; 105 服务器关服
+  int64 balance = 2;    // 余额
+  repeated AreaBet areaBets = 3;  // 各个区域下注额,依次为 1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  repeated BetData list = 4;    // 下注列表
 }
 
 // 退出房间请求
@@ -197,7 +209,7 @@ message GameLeaveReq {
 
 // 退出房间回复
 message GameLeaveResp {
-    uint32 result = 1; // 0: 成功; 100: 当前局有下注结束前不能退出 101: 5局没下注强踢 102: 服务器维护
+  uint32 result = 1; // 0: 成功; 100: 当前局有下注结束前不能退出 101: 5局没下注强踢 102: 服务器维护
 }
 
 // 准备通知
@@ -207,87 +219,154 @@ message GameReadyNoticeResp {
 
 // 开始通知
 message GameStartNoticeResp {
-	uint32 joker				= 1;    // Joker 牌
+  uint32 joker = 1;    // Joker 牌
 }
 
 // 下注通知
 message GameBetNoticeResp {
-    uint32 count    	= 1;    // 下注时间  如15代表15秒
-    uint32 repeatBet    = 2;    // 是否可以复投 0 不可以 1 可以
+  uint32 count = 1;    // 下注时间  如15代表15秒
+  uint32 repeatBet = 2;    // 是否可以复投 0 不可以 1 可以
+  string encryptKey = 3;    //sha512加密过的随机密钥 sha512(secretKey)
+  string encryptResult = 4;    //sha512加密过的结果 sha512(secretKey+cardsA+cardsB+joker)
+  string period = 5;    // 期号
 }
 
 // 开奖通知
 message GameResultResp {
-   	uint32 winner          		= 1;    // 方位: 1 A;  2 B;
-	uint32 joker				= 2;    // Joker 牌
-	uint32 nums					= 3;	// 牌数量 
-	repeated uint32 cardsA   	= 4;   // 牌值A 数组
-	repeated uint32 cardsB   	= 5;   // 牌值B 数组
+  uint32 winner = 1;    // 方位: 1 A;  2 B;
+  uint32 joker = 2;    // Joker 牌
+  uint32 nums = 3;  // 牌数量
+  repeated uint32 cardsA = 4;   // 牌值A 数组
+  repeated uint32 cardsB = 5;   // 牌值B 数组
+  string secretKey = 6;    // 随机密钥
+  string period = 7;    // 期号
+  string resultOriStr = 8;//结果加密原始串(joker+cards_A+cards_B)
 }
 
 message WinnerBalance {
-    uint32 index    = 1;    // 方位: 1 down;  2 up; 3,4,5,6,7,8,9,10 :side1-8
-    uint32 amount   = 2;    // 派奖总额
-    uint32 bets     = 3;    // 当前下注
+  uint32 index = 1;    // 方位:  1 A;  2 B; 3,4,5,6,7,8,9,10 :side1-8
+  int64 amount = 2;    // 派奖总额
+  int64 bets = 3;    // 当前下注
 }
 
 message WinnerData {
-    uint32 user_id              = 1;    // 用户ID
-    uint32 balance              = 2;    // 余额
-    repeated WinnerBalance wins = 3;    // 派彩信息
+  uint32 user_id = 1;    // 用户ID
+  int64 balance = 2;    // 余额
+  repeated WinnerBalance wins = 3;    // 派彩信息
 }
 
 // 派彩通知
 message GameWinNoticeResp {
-     repeated WinnerData winners = 1; // 需派彩人员  只有桌子上的6个位置加自己
+  repeated WinnerData winners = 1; // 需派彩人员  只有桌子上的6个位置加自己
 }
 
 // 获取玩家列表请求
 message GameGetPlayersReq {
-  uint32 page                = 1;    // 第几页
+  uint32 page = 1;    // 第几页
 }
 
 // 获取玩家列表回复
 message GameGetPlayersResp {
-    repeated com.cw.chess2.platform.GameUser users    = 1;   // 用户列表
-    repeated com.cw.chess2.platform.GameUser winUsers = 2; // 用户列表 第一个位置 赢的最多的用户，第二个位置胜率最高用户
-    uint32 page                                       = 3;    // 第几页
-    uint32 count                                      = 4;    // 总人数
+  repeated com.cw.chess2.platform.GameUser users = 1;   // 用户列表
+  repeated com.cw.chess2.platform.GameUser winUsers = 2; // 用户列表 第一个位置 赢的最多的用户，第二个位置胜率最高用户
+  uint32 page = 3;    // 第几页
+  uint32 count = 4;    // 总人数
 }
 
 message GameSyncChairResp {
-    repeated ChairStatus chairs = 1;	// 座位属性
+  repeated ChairStatus chairs = 1;  // 座位属性
 }
 
 message GameSyncPlayerCountResp  {
-    uint32 count = 1;   // 总人数
+  uint32 count = 1;   // 总人数
 }
 
 message GameNoBetNoticeResp {
-    uint32 count = 1;   // 连续多少局未下注
+  uint32 count = 1;   // 连续多少局未下注
 }
 
 // 同步余额
 message GameSyncBalanceResp {
-    uint32 balance = 1;     // 余额
+  int64 balance = 1;     // 余额
+}
+
+// 记录信息
+message RecordInfo{
+  string period = 1;    // 期号
+  uint32 joker = 2;    // Joker 牌
+  uint32 nums = 3;  // 牌数量 side1-8
+  repeated uint32 cardsA = 4;   // 牌值A 数组
+  repeated uint32 cardsB = 5;   // 牌值B 数组
+  repeated WinnerBalance wins = 6;    // 派彩信息
+  int64  winlose = 7;  // 本局输赢多少 有正负
+  uint32 bet_time = 8;//下注时间
+}
+// 获取个人投注记录信息请求
+message GetSelfRecordReq {
+  uint32 page = 1;    // 第几页
+  uint32 pageSize = 2;    // 每页多少条记录
+}
+// 个人记录信息返回
+message GetSelfRecordResp {
+  repeated RecordInfo records = 1;// 记录信息
+  uint32 page = 2;// 第几页
+  uint32 pageSize = 3;// 每页多少条记录
+  uint32 count = 4;// 总记录数
+  uint32 PageCount = 5;// 总页数
+}
+// 记录信息
+message DrawInfo{
+  string period = 1;    // 期号
+  uint32 joker = 2;    // Joker 牌
+  uint32 nums = 3;  // 牌数量 side1-8
+  repeated uint32 cardsA = 4;   // 牌值A 数组
+  repeated uint32 cardsB = 5;   // 牌值B 数组
+  string secretKey = 6;//随机密钥 下注状态未公开 为空
+  string encryptKey = 7;//sha512加密过的随机密钥 sha512(secretKey)
+  string encryptResult = 8;//sha512加密过的结果 sha512(joker+secretKey+cardsA+cardsB)
+  string resultOriStr = 9;//结果加密原始串(joker+cards_A+cards_B)
+}
+// 获取开奖历史请求
+message GetDrawListReq {
+  uint32 page = 1;    // 第几页
+  uint32 pageSize = 2;    // 每页多少条记录
+}
+// 获取开奖历史请求返回
+message GetDrawListResp {
+  repeated DrawInfo records = 1;// 开奖数据
+  uint32 page = 2;// 第几页
+  uint32 pageSize = 3;// 每页多少条记录
+  uint32 count = 4;// 总记录数
+  uint32 PageCount = 5;// 总页数
+  uint32 ANum = 6;//龙赢数量
+  uint32 BNum = 7;//虎赢数量
+  uint32 statisticNum = 8;//统计局数
+}
+// 获取某期开奖信息请求
+message GetDrawInfoReq {
+  string period = 1;    // 期号
+}
+// 获取某期开奖信息请求返回
+message GetDrawInfoResp {
+  DrawInfo record = 1;// 开奖数据
 }
 
 // 用户聊天请求
 message MsgChatReq{
-	uint32 tableId = 1;  	//桌子id
-	uint32 chatType = 2;	// 聊天类型1：固定语句聊天；2：自由语句聊天
-	string typeValue1 = 3;	// 固定语句聊天的值
-	string typeValue2 = 4;	// 自由语句聊天的值
+  uint32 tableId = 1;    //桌子id
+  uint32 chatType = 2;  // 聊天类型1：固定语句聊天；2：自由语句聊天
+  string typeValue1 = 3;  // 固定语句聊天的值
+  string typeValue2 = 4;  // 自由语句聊天的值
 }
 
 // 用户聊天回复转发
 message MsgChatResp{
-	uint32 tableId = 1;		//桌子id
-	uint32 userId   = 2;    // 聊天用户ID
-	string nickName = 3;	//聊天用户昵称
-	uint32 chatType = 4;	// 聊天类型1：固定语句聊天；2：自由语句聊天
-	string typeValue1 = 5;	// 固定语句聊天的值
-	string typeValue2 = 6;	// 自由语句聊天的值
+  uint32 tableId = 1;    //桌子id
+  uint32 userId = 2;    // 聊天用户ID
+  string nickName = 3;  //聊天用户昵称
+  uint32 chatType = 4;  // 聊天类型1：固定语句聊天；2：自由语句聊天
+  string typeValue1 = 5;  // 固定语句聊天的值
+  string typeValue2 = 6;  // 自由语句聊天的值
 }
 
 /***********************************AB百人游戏客户端和服务端通信定义 结束*********************************/

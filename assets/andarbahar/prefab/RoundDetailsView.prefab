@@ -657,7 +657,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 418.75,
+      "width": 0,
       "height": 45
     },
     "_anchorPoint": {
@@ -693,7 +693,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "1231231231",
+    "_string": "",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 40,
@@ -1168,7 +1168,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 93.3251953125,
+      "width": 80.53369140625,
       "height": 28.98
     },
     "_anchorPoint": {
@@ -1204,7 +1204,7 @@
       "b": 228,
       "a": 255
     },
-    "_string": "Cards:23",
+    "_string": "Cards:0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 23,
@@ -1762,7 +1762,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 93.3251953125,
+      "width": 80.53369140625,
       "height": 28.98
     },
     "_anchorPoint": {
@@ -1798,7 +1798,7 @@
       "b": 228,
       "a": 255
     },
-    "_string": "Cards:22",
+    "_string": "Cards:0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 23,
@@ -2356,7 +2356,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 93.3251953125,
+      "width": 80.53369140625,
       "height": 28.98
     },
     "_anchorPoint": {
@@ -2392,7 +2392,7 @@
       "b": 228,
       "a": 255
     },
-    "_string": "Cards:22",
+    "_string": "Cards:0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 23,

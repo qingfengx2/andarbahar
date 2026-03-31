@@ -139,7 +139,7 @@ export class betHistoryView extends Component {
             this.betListNode.children[bet.index - 1].active = true;
             find('betLabel', this.betListNode.children[bet.index - 1]).getComponent(Label).string = this.convertCurrency(bet.bets);
             find('winLabel', this.betListNode.children[bet.index - 1]).getComponent(Label).string = this.convertCurrency(bet.amount ? Number(bet.amount) : 0);
-            find('oddsLabel', this.betListNode.children[bet.index - 1]).getComponent(Label).string = config.odds[bet.index - 1] ? `  ${config.odds[bet.index - 1] / 100}` : '';
+            find('oddsLabel', this.betListNode.children[bet.index - 1]).getComponent(Label).string = config.odds[bet.index - 1] ? `${config.odds[bet.index - 1] / 100}` : '';
 
         });
         find('rightNode/betLabel', this.recordDetail).getComponent(Label).string = this.convertCurrency(betTotal);
