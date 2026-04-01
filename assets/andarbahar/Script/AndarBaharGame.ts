@@ -1,4 +1,4 @@
-import { _decorator, assetManager, Button, Canvas, Color, Component, easing, find, Game, game, instantiate, Intersection2D, isValid, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, sp, Sprite, SpriteFrame, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec2, Vec3, view } from 'cc';
+import { _decorator, assetManager, Button, Canvas, Color, Component, easing, find, Game, game, instantiate, Intersection2D, isValid, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, sp, Sprite, SpriteFrame, sys, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec2, Vec3, view } from 'cc';
 import { ResizeAdapter } from '../../Script/ResizeAdapter';
 import { game_network } from '../../Script/network/game_network';
 import { AndarBahar_network } from './AndarBahar_network';
@@ -175,6 +175,60 @@ export class AndarBaharGame extends Component {
 
         this.loadBundle();
         this.getGateWays();
+        this.node.getChildByPath("game/backButton").active = sys.isMobile;
+        this.scaleLoadingSpriteToMaxResolution();
+    }
+    private scaleLoadingSpriteToMaxResolution(): void {
+        if (!this.LoadingSprite) {
+            return;
+        }
+
+        const videoTransform = this.LoadingSprite.getComponent(UITransform);
+        if (!videoTransform) {
+            return;
+        }
+
+        const videoWidth = videoTransform.width;
+        const videoHeight = videoTransform.height;
+
+        if (videoWidth <= 0 || videoHeight <= 0) {
+            return;
+        }
+
+        const visibleSize = view.getVisibleSize();
+
+        const scaleY = visibleSize.height / videoHeight;
+        const maxScale = Math.max(visibleSize.width / videoWidth, scaleY);
+        if (this.resizeAdapter.isRealPCBrowser()) {
+
+            this.LoadingSprite.setScale(scaleY, scaleY, 1);
+        } else {
+
+            this.LoadingSprite.setScale(maxScale, maxScale, 1);
+        }
+
+    }
+    public exitToPlatform() {
+        AndarBahar_network.sendGameLeaveReq();
+        try { parent.postMessage("closeWebView", "*"); } catch (e) { }
+        try { window["AndroidJS"].CloseWebView(); } catch (e) { }
+        try {
+            if (document)
+                document.location = "callbackcocos://exithall=1";
+        } catch (e) { }
+
+        // if (document.getElementById('bt_close_webview')) return;
+        // const container = document.getElementById('Cocos3dGameContainer');
+        // const bt = document.createElement('button');
+        // bt.id = 'bt_close_webview';
+        // bt.style = 'position:absolute;top:15px;left:15px;width:50px;height:50px;border:none;background-color:#00000000;background-image:url("' + this.img_close.nativeUrl + '");background-size:contain;';
+        // bt.onclick = () => {
+        //     container.removeChild(bt);
+        //     this.onClick_bt_back();
+        // };
+        // container.appendChild(bt);
+        // try { if (MWGlobal.SUPPORT_URL == "1") window.history.back(); } catch (e) { }
+        try { window.close(); } catch (e) { }
     }
     onClickRoadBtn() {
         music.playMusic(music.Click);
