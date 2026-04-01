@@ -1293,7 +1293,7 @@ export class AndarBaharGame extends Component {
         if (this.cards_node) {
             this.result_node.active = true;
             let node = this.cards_node.getComponent(ABCardsTool);
-            node.playTurnCardAnim(callback);
+            node.playTurnCardAnim(callback, this.result_node);
         }
     }
     showLightAnim(type) {
@@ -1403,13 +1403,13 @@ export class AndarBaharGame extends Component {
     }
     private getWinnerTargetNode(userId: any): WinnerTargetInfo {
         if (this.isMySelf(userId)) {
-            return { node: this.mySelfNode, hasSeat: true, isSelf: true };
+            return { node: find("mask", this.mySelfNode), hasSeat: true, isSelf: true };
         }
         for (let i = 0; i < this.userPlayerTb.length; i++) {
             const playerNode = this.userPlayerTb[i];
             const player = playerNode.getComponent(ABPlayers);
             if (player && player.getUserId() === userId) {
-                return { node: playerNode, hasSeat: true, isSelf: false };
+                return { node: find("Node/mask", playerNode), hasSeat: true, isSelf: false };
             }
         }
 
@@ -1429,6 +1429,14 @@ export class AndarBaharGame extends Component {
         let endPos = pool.getComponent(UITransform).convertToNodeSpaceAR(worldPos);
         let length = coinList.length;
 
+        // let originScale = coinList.length > 0 ? coinList[0].getScale() : new Vec3(0.5, 0.5, 1);
+        // let targetScale = originScale;
+        // if (winnerTargetInfo && (winnerTargetInfo.hasSeat || winnerTargetInfo.isSelf)) {
+        //     if (winnerTargetInfo.isSelf) {
+        //         targetScale = new Vec3(1, 1, 1);
+        //     }
+
+        // }
         let index = 0;
         while (coinList.length > 0) {
             let betCoin = coinList.shift();
@@ -1441,6 +1449,7 @@ export class AndarBaharGame extends Component {
                 .to(totalTime, { position: endPos }, { easing: easing.expoOut })
                 .call(() => {
                     if (betCoin.parent) {
+                        // betCoin.setScale(originScale);
                         betCoin.removeFromParent();
 
                         // 回收到对象池
@@ -1923,7 +1932,7 @@ export class AndarBaharGame extends Component {
                     if (this.hash_panel.node.active) {
                         this.hash_panel.setData(this.secretKey, this.result, this.encryptKey, this.encryptResult);
                     }
-
+                    this.resultWinType = message.winner;
                     let self = this;
                     let func = function () {
                         self.playTurnCardAnim(function () {
@@ -1948,7 +1957,7 @@ export class AndarBaharGame extends Component {
                     let GameWinNoticeResp = andarbaharProto.GameWinNoticeResp;
                     let message = GameWinNoticeResp.decode(proto.data);
 
-                    // console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     let self = this;
                     let callback = function () {
                         self.playAddRoadAnim();
@@ -1956,8 +1965,9 @@ export class AndarBaharGame extends Component {
                         self.stopLightAnim();
                     }.bind(this);
 
-                    // 再派彩 先系统收输的，然后再分发到玩家赢得，                                            
-                    this.onGameWinNoticeResp(message.winners, callback);
+
+                    this.onGameWinNoticeRespV2(message.winners, callback);
+
                     this.freshRoadData(this.resultWinData);
 
                     this.room_road.initDataInView(this.roadData);
@@ -2044,6 +2054,165 @@ export class AndarBaharGame extends Component {
                 //         "Payment Tips"
                 //     );
                 // }
+            }
+        }
+    }
+    private getPoolByType(type: number): Node | null {
+        return this.areaPoolArr[type - 1] || null;
+    }
+    private moveCoinsToPool(sourceType: number, targetType: number) {
+        const sourcePool = this.getPoolByType(sourceType);
+        if (!sourcePool) return;
+
+        const coins = sourcePool.children.slice();
+        for (let i = 0; i < coins.length; i++) {
+            const coin = coins[i] as any;
+            const worldPos = sourcePool.getComponent(UITransform).convertToWorldSpaceAR(coin.position);
+            const targetPool = this.getPoolByType(targetType);
+            if (!targetPool) return;
+            const startPos = targetPool.getComponent(UITransform).convertToNodeSpaceAR(worldPos);
+            coin.__poolType = targetType;
+            coin.__selected = false;
+            this.setRandomPositionByTypeWithNode(targetType, coin, startPos, undefined);
+        }
+    }
+    private distributePoolToWinnersByType(winners: any[], type: number) {
+        for (let i = 0; i < winners.length; i++) {
+            const winner = winners[i];
+            const wins = winner.wins || [];
+            const targetNode = this.getWinnerTargetNode(winner.userId);
+
+            for (let j = 0; j < wins.length; j++) {
+                const winInfo = wins[j];
+                if (Number(winInfo.index) !== type) continue;
+                let needBet = Number(winInfo.amount || 0);
+                const coinList = this.extractPoolCoinsByAmount(type, needBet);
+
+                if (coinList.length > 0) {
+                    this.sendCoinToSeat(targetNode.node, type, coinList, targetNode);
+                }
+            }
+        }
+    }
+    private extractPoolCoinsByAmount(type: number, amount: number): Node[] {
+        const pool = this.getPoolByType(type);
+        if (!pool || amount <= 0) return [];
+
+        const candidates: Node[] = [];
+        for (let i = 0; i < pool.children.length; i++) {
+            const node = pool.children[i] as any;
+            if (node && !node.__selected) {
+                candidates.push(node as Node);
+            }
+        }
+
+        candidates.sort((a: any, b: any) => {
+            return Number(b.bet || 0) - Number(a.bet || 0);
+        });
+
+        const picked: Node[] = [];
+        let left = amount;
+        for (let i = 0; i < candidates.length; i++) {
+            const coin = candidates[i] as any;
+            const bet = Number(coin.bet || 0);
+            if (bet <= 0) continue;
+            if (left >= bet) {
+                coin.__selected = true;
+                picked.push(candidates[i]);
+                left -= bet;
+            }
+        }
+
+        return picked;
+    }
+    private getWinnerSeat(userId: any) {
+        if (this.isMySelf(userId)) {
+            return this.mySelfNode;
+        }
+        for (let i = 0; i < this.userPlayerTb.length; i++) {
+            const playerNode = this.userPlayerTb[i];
+            const player = playerNode.getComponent(ABPlayers);
+            if (player && player.getUserId() === userId) {
+                return playerNode;
+            }
+        }
+
+        return this.btn_players.node;
+    }
+    private updateWinnerMoneyAndAnim(winners: any[]) {
+        for (let i = 0; i < winners.length; i++) {
+            const element = winners[i];
+            const userId = element.userId;
+            const balance = element.balance;
+            const wins = element.wins || [];
+
+            let winPlayerNode = this.getWinnerSeat(userId);
+            let totalWin = 0;
+            for (let j = 0; j < wins.length; j++) {
+                totalWin += Number(wins[j].amount || 0);
+            }
+
+            this.timeoutGameOver = setTimeout(() => {
+                if (!isValid(winPlayerNode)) return;
+                if (totalWin > 0) {
+                    winPlayerNode.getComponent(ABPlayers).playWinAnim(Number(totalWin));
+                }
+                winPlayerNode.getComponent(ABPlayers).updateMoney(Number(balance));
+            }, 1560);
+
+            if (this.timerArray != null) {
+                this.timerArray.push(this.timeoutGameOver);
+            }
+        }
+    }
+    private sendRemainPoolToOtherPlayers(type: number) {
+        const pool = this.getPoolByType(type);
+        if (!pool) return;
+        const restCoins = pool.children.filter((coin: any) => !coin.__selected);
+        if (restCoins.length > 0) {
+            this.sendCoinToSeat(this.btn_players.node, type, restCoins);
+        }
+    }
+    onGameWinNoticeRespV2(winners, callback) {
+        this.resetCoinSelectedFlag();
+        const loseType = this.resultWinType === 1 ? 2 : 1;
+        this.moveCoinsToPool(loseType, this.resultWinType);
+
+        let winAreaType = this.winnerTypeByCardsNum();
+        const sourcePool = this.getPoolByType(winAreaType);
+        if (sourcePool && sourcePool.children.length <= 0) {
+            winAreaType = this.resultWinType
+        }
+        for (let i = 3; i <= 10; i++) {
+            this.moveCoinsToPool(i, winAreaType);
+        }
+
+        console.log("赢家列表:", winners);
+        this.timeoutGameOver1 = setTimeout(() => {
+            this.distributePoolToWinnersByType(winners, this.resultWinType);
+            this.distributePoolToWinnersByType(winners, winAreaType);
+
+            this.sendRemainPoolToOtherPlayers(winAreaType);
+            this.sendRemainPoolToOtherPlayers(this.resultWinType);
+
+            this.updateWinnerMoneyAndAnim(winners);
+
+            this.timeoutGameOverCallback = setTimeout(() => {
+                if (callback) {
+                    callback();
+                }
+            }, 1200);
+        }, 600);
+        if (this.timerArray != null) {
+            this.timerArray.push(this.timeoutGameOver1);
+        }
+        music.playMusic(music.win);
+    }
+    private resetCoinSelectedFlag() {
+        for (let i = 0; i < this.coinLists.length; i++) {
+            const coin = this.coinLists[i] as any;
+            if (coin) {
+                coin.__selected = false;
             }
         }
     }

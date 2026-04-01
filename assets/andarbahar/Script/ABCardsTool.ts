@@ -187,8 +187,9 @@ export class ABCardsTool extends Component {
         }
 
     }
-    playTurnCardAnim(callback) {
+    playTurnCardAnim(callback, result_node) {
         let self = this;
+        let lblNums = result_node.getChildByName("lblNums").getComponent(Label);
         let animFunc = function (index) {
             if (index < self.nums) {
                 let node;       //牌质体
@@ -224,6 +225,7 @@ export class ABCardsTool extends Component {
                 index += 1;
                 setTimeout(() => {
                     animFunc(index);
+                    lblNums.string = `${index}`;
                     if (index == self.nums) {
                         let slde = ((self.nums - 1) % 2 == 0) ? "L" : "R";
                         node.getComponent(sp.Skeleton).addAnimation(0, `poker_${slde}02`, true);
@@ -232,7 +234,6 @@ export class ABCardsTool extends Component {
             } else {
                 setTimeout(() => {
                     // 翻牌翻完了
-                    console.log("翻牌翻完了");
                     if (callback) {
                         callback();
                     }
