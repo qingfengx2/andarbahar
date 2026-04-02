@@ -1,6 +1,6 @@
-import * as awesomeRoot from "../../Script/proto/awesome.js";
-import { network } from "../../Script/network/network";
-import { net_data } from "../../Script/network/net_data";
+import * as awesomeRoot from "./proto/awesome.js";
+import { network } from "./network/network";
+import { net_data } from "./network/net_data";
 let ab_proto = awesomeRoot.com.cw.chess2.andarbahar;
 let cmd = ab_proto.AndarBaharCmd;
 let serverType = awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB;

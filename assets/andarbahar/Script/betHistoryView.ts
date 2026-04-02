@@ -1,6 +1,6 @@
 import { _decorator, Button, Color, Component, find, instantiate, Label, Node, ScrollView, tween, Tween, v3, Vec3 } from 'cc';
 import { AndarBahar_network } from './AndarBahar_network';
-import { config } from '../../Script/util/config';
+import { config } from './util/config';
 import { ABCard } from './ABCard';
 import { music } from './AndarbaharMusic';
 import { ClipboardUtils } from './ClipboardUtils';

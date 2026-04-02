@@ -4,6 +4,7 @@ import { network } from "./network";
 import { config } from "../util/config";
 import * as awesomeRoot1 from "../proto/awesome.js";
 import { _decorator, Component, game, Prefab, sys } from "cc";
+import { AndarbaharManager } from "../AndarbaharManager";
 const awesomeRoot = (awesomeRoot1 as any).default || awesomeRoot1;
 /**
  * 统一网络状态管理
@@ -98,11 +99,8 @@ export class game_network_status extends Component {
         // commonFun.removeGameLoading();
 
         // this.unschedule(this.reconnect, this);
-        // window.dialogManager.showByPrefab(this.panel_tips_prefab, true, function (panelNode) {
-        //     panelNode.getComponent('tips_panel').showMsgWithTitle('Notice', 'This account has been logged in another device,Click to re-login!', function () {
-        //         cc.director.loadScene("login");
-        //     });
-        // }.bind(this));
+
+        AndarbaharManager.instance.showPopupView(999)
     }
 
     connectFailed() {
@@ -110,12 +108,6 @@ export class game_network_status extends Component {
         // commonFun.removeGameLoading();
 
         // this.unschedule(this.reconnect, this);
-        // window.dialogManager.showByPrefab(this.panel_tips_prefab, true, function (panelNode) {
-        //     panelNode.getComponent('tips_panel').showMsgWithTitle('Notice', "Cann't connect the server,Click to re-login!", function () {
-        //         cc.director.loadScene("login");
-        //         cc.game.emit("HotUpdateFinish");
-        //     });
-        // }.bind(this));
-        // }.bind(this));
+        AndarbaharManager.instance.showPopupView(1000)
     }
 }

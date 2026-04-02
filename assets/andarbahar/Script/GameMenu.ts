@@ -1,8 +1,6 @@
 import { _decorator, Component, Node, tween, Vec3, UITransform, Widget, Tween, assetManager, Prefab, instantiate, director, sys } from 'cc';
 const { ccclass, property } = _decorator;
 import { AndarBahar_network } from './AndarBahar_network';
-// import { history_panel } from './history_panel';
-// import { bet_history } from './bet_history';
 import { music } from './AndarbaharMusic';
 import { AndarbaharManager } from './AndarbaharManager';
 import { historyView } from './historyView';

@@ -1,5 +1,5 @@
 import { _decorator, Component, Sprite, Label, UITransform, assetManager, ImageAsset, isValid, SpriteFrame, Texture2D, tween, Vec3 } from 'cc';
-import awesome from '../../Script/proto/awesome';
+import awesome from './proto/awesome';
 import { AndarbaharManager } from './AndarbaharManager';
 
 const { ccclass, property } = _decorator;

@@ -1,5 +1,6 @@
 import { _decorator, assetManager, AssetManager, Prefab, director, instantiate, Node, Sprite, SpriteFrame, Vec3, tween, isValid } from 'cc';
 import { music } from './AndarbaharMusic';
+import { PopupVIew } from './PopupVIew';
 
 
 export class AndarbaharManager {
@@ -58,6 +59,14 @@ export class AndarbaharManager {
         });
     }
 
+    public showPopupView(code) {
+        this.openPanel('prefab/PopupVIew', (panelNode) => {
+            const round_Details = panelNode.getComponent(PopupVIew);
+            if (round_Details) {
+                round_Details.initDataInView(code);
+            }
+        });
+    }
     public loadAndAnimateDot(
         spriteStr: string,
         dot: Node,

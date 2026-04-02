@@ -1,15 +1,15 @@
-import { _decorator, assetManager, Button, Canvas, Color, Component, easing, find, Game, game, instantiate, Intersection2D, isValid, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, sp, Sprite, SpriteFrame, sys, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec2, Vec3, view } from 'cc';
+import { _decorator, assetManager, Button, Canvas, Color, Component, easing, find, Game, game, instantiate, Intersection2D, isValid, JsonAsset, Label, Layout, Node, NodePool, PolygonCollider2D, Prefab, sp, Sprite, SpriteFrame, sys, Toggle, Tween, tween, UIOpacity, UITransform, v2, v3, Vec2, Vec3, view } from 'cc';
 import { ResizeAdapter } from '../../Script/ResizeAdapter';
-import { game_network } from '../../Script/network/game_network';
+import { game_network } from './network/game_network';
 import { AndarBahar_network } from './AndarBahar_network';
-import * as awesomeRoot from '../../Script/proto/awesome.js'
-import { config } from '../../Script/util/config';
+import * as awesomeRoot from './proto/awesome.js'
+import { config } from './util/config';
 import { ABCard } from './ABCard';
-import { PrefabPool } from '../../Script/util/PrefabPool';
+import { PrefabPool } from './util/PrefabPool';
 import { ABPlayers } from './ABPlayers';
 import { ABCardsTool } from './ABCardsTool';
-import { PrefabConst } from '../../Script/util/PrefabConst';
-import { network } from '../../Script/network/network';
+import { PrefabConst } from './util/PrefabConst';
+import { network } from './network/network';
 import { music } from './AndarbaharMusic';
 import { AndarbaharManager } from './AndarbaharManager';
 import { toast_panel } from './toast_panel';
@@ -534,7 +534,7 @@ export class AndarBaharGame extends Component {
     initChip() {
         let chips = this.gameDesc.chips;
         if (this.toggle_betBtns != null) {
-            let sf;
+
             for (let index = 0; index < this.toggle_betBtns.length; index++) {
                 let toggle = this.toggle_betBtns[index];
                 if (chips[index]) {
@@ -1184,7 +1184,7 @@ export class AndarBaharGame extends Component {
             let bet = betData.bet;
             this.sendCoinToTable(find("mask", this.mySelfNode), type, bet);
         }
-        console.log("onRebetRsp", data);
+        // console.log("onRebetRsp", JSON.stringify(data));
         // let dragonBet = data.totalDownBet;
         // let tigerBet = data.totalUpBet;
         // let tieBet = data.totalSevenBet;
@@ -2011,7 +2011,7 @@ export class AndarBaharGame extends Component {
                     let GameWinNoticeResp = andarbaharProto.GameWinNoticeResp;
                     let message = GameWinNoticeResp.decode(proto.data);
 
-                    console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
+                    // console.log('派彩返回andarbahar游戏=========:[' + JSON.stringify(message) + ']');
                     let self = this;
                     let callback = function () {
                         self.playAddRoadAnim();
@@ -2241,7 +2241,6 @@ export class AndarBaharGame extends Component {
             this.moveCoinsToPool(i, winAreaType);
         }
 
-        console.log("赢家列表:", winners);
         this.timeoutGameOver1 = setTimeout(() => {
             this.distributePoolToWinnersByType(winners, this.resultWinType);
             this.distributePoolToWinnersByType(winners, winAreaType);

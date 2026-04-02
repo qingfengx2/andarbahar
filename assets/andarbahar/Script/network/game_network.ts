@@ -4,8 +4,6 @@ import * as awesomeRoot1 from "../proto/awesome.js";
 import { config } from "../util/config";
 import { network } from "../network/network";
 import { client_network } from "../network/client_network";
-import { net_protocol } from "../network/net_protocol";
-import { net_data } from "../network/net_data";
 import { Component, director, game, sys, _decorator } from "cc";
 
 const awesomeRoot = (awesomeRoot1 as any).default || awesomeRoot1;

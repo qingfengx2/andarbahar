@@ -1,5 +1,4 @@
 import { _decorator, Button, Component, Label, Node, sp } from 'cc';
-import awesome from '../../Script/proto/awesome';
 import { ABCard } from './ABCard';
 const { ccclass, property } = _decorator;
 

@@ -1,6 +1,6 @@
 import { _decorator, Component, find, instantiate, Label, Node, ScrollView } from 'cc';
 import { music } from './AndarbaharMusic';
-import * as awesomeRoot from '../../Script/proto/awesome.js';
+import * as awesomeRoot from './proto/awesome.js';
 import { ABPlayers } from './ABPlayers';
 import { AndarBahar_network } from './AndarBahar_network';
 const { ccclass, property } = _decorator;
