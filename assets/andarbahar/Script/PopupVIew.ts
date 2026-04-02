@@ -13,13 +13,20 @@ export class PopupVIew extends Component {
 
     @property({ type: Label, displayName: 'contentLabel' })
     contentLabel: Label = null;
-
-    initDataInView(id: number) {
+    _callback = null
+    initDataInView(id: number, callback = null) {
         let content = STATUS_MSG[id] || "Unknown error.";
         this.contentLabel.string = content;
+        this._callback = callback
     }
 
     onClickClose() {
+
+        if (this._callback) {
+            this._callback()
+            this.node.destroy();
+            return
+        }
         this.node.destroy();
         if (sys.isMobile) {
             try { parent.postMessage("closeWebView", "*"); } catch (e) { }

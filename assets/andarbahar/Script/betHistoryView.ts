@@ -31,11 +31,7 @@ export class betHistoryView extends Component {
     recordsData = null;
     private betRecordCenterPos: Vec3 = null;
     private recordDetailCenterPos: Vec3 = null;
-    reslutMap = {
-        1: "Dragon",
-        2: "Tiger",
-        3: "Tie"
-    }
+
     start() {
         if (this.betRecord) {
             this.betRecordCenterPos = this.betRecord.position.clone();
@@ -144,7 +140,7 @@ export class betHistoryView extends Component {
         });
         find('rightNode/betLabel', this.recordDetail).getComponent(Label).string = this.convertCurrency(betTotal);
         find('rightNode/winLabel', this.recordDetail).getComponent(Label).string = this.convertCurrency(winTotal);
-        find('resultLabel', this.recordDetail).getComponent(Label).string = `Win:  ${this.reslutMap[data.result]}`;
+        // find('resultLabel', this.recordDetail).getComponent(Label).string = `Win:  ${this.reslutMap[data.result]}`;
 
         let andar = find("frame/Andar/ABCard", this.recordDetail)
         andar.getComponent(ABCard).initCardValue(data.cardsA[data.cardsA.length - 1])

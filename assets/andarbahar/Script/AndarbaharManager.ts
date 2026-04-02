@@ -59,11 +59,11 @@ export class AndarbaharManager {
         });
     }
 
-    public showPopupView(code) {
+    public showPopupView(code, callback = null) {
         this.openPanel('prefab/PopupVIew', (panelNode) => {
             const round_Details = panelNode.getComponent(PopupVIew);
             if (round_Details) {
-                round_Details.initDataInView(code);
+                round_Details.initDataInView(code, callback);
             }
         });
     }

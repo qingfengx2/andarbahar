@@ -96,59 +96,12 @@ var client_network = {
         let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_AB, awesomeRoot.com.cw.chess2.andarbahar.AndarBaharCmd.CMD_C_GAME_ENTER_REQ, msg);
         this.send_net_raw_data(ws, proto);
     },
-
-
     //---------------------------------------百人类游戏---------------------------------
     //获取百人游戏列表
     sendGameRoomListReq(ws, msg, cmd) {
         let proto = net_data.net_struct_new_with_protobuf(cmd, awesomeRoot.com.cw.chess2.platform.ServerGameCommonCmd.CMD_C_GAME_ROOM_LIST_REQ, msg);
         this.send_net_raw_data(ws, proto);
     },
-
-    // // teenpattiwar 请求进入游戏
-    // sendTeenpattiWarGameEnterReq(ws, msg) {
-    //     let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_TEEN_PATTI_WAR_, awesomeRoot.com.cw.chess2.teen_patti_war.TeenPattiWarCmd.CMD_C_GAME_ENTER_REQ, msg);
-    //     this.send_net_raw_data(ws, proto);
-    // },
-    // // dragontiger 请求进入游戏
-    // sendDragonTigerG 
-    //3PATTI请求进入游戏
-    send3PattiGameEnterReq(ws, msg) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_ENTER_REQ, msg);
-        // this.send_net_raw_data(ws, proto);
-    },
-
-    //3PATTI 游戏逻辑
-    // 请求离开
-    sendGameLeave3PattiReq(ws, msg) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_LEAVE_REQ, msg);
-        // this.send_net_raw_data(ws, proto);
-    },
-    // 获取桌子信息
-    sendGameGetTableStatus3PTReq(ws) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_GET_TABLE_STATUS_REQ, null);
-        // this.send_net_raw_data(ws, proto);
-    },
-    //下注
-    sendGameBet3PTReq(ws, proto) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_BET_REQ, null);
-        this.send_net_raw_data(ws, proto);
-    },
-    //请求彩金列表
-    sendGameGetJackPotList3PTReq(ws, proto) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_BET_REQ, null);
-        this.send_net_raw_data(ws, proto);
-    },
-    //请求复投
-    sendRebet3PTReq(ws, proto) {
-        // let proto = net_data.net_struct_new_with_protobuf(awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_LUCKY3PATTI, awesomeRoot.com.cw.chess2.lucky3patti.Lucky3pattiCmd.CMD_C_GAME_BET_REQ, null);
-        this.send_net_raw_data(ws, proto);
-    }
-
-
-
-
-
 };
 
 export { client_network };

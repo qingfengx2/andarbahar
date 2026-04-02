@@ -36,8 +36,6 @@ export class game_network_status extends Component {
     }
 
     net_MessageBack(proto: any) {
-        // console.log(TAG, 'net_MessageBack', proto);
-
         if (proto.type === awesomeRoot.com.cw.chess2.platform.ServerType.SERVER_TYPE_GATEWAY) {
             if (proto.protocol === awesomeRoot.com.cw.chess2.platform.ServerGatewayCmd.CMD_GATEWAY_REPEAT_LOGIN_RESP) {
                 //被踢
@@ -100,7 +98,7 @@ export class game_network_status extends Component {
 
         // this.unschedule(this.reconnect, this);
 
-        AndarbaharManager.instance.showPopupView(999)
+        AndarbaharManager.instance.showPopupView(999, this.reconnect())
     }
 
     connectFailed() {
@@ -108,6 +106,6 @@ export class game_network_status extends Component {
         // commonFun.removeGameLoading();
 
         // this.unschedule(this.reconnect, this);
-        AndarbaharManager.instance.showPopupView(1000)
+        AndarbaharManager.instance.showPopupView(1000, this.reconnect())
     }
 }

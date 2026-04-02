@@ -175,7 +175,7 @@ export class AndarBaharGame extends Component {
 
         this.loadBundle();
         this.getGateWays();
-        this.node.getChildByPath("game/backButton").active = sys.isMobile;
+        // this.node.getChildByPath("game/backButton").active = sys.isMobile;
         this.scaleLoadingSpriteToMaxResolution();
     }
     private scaleLoadingSpriteToMaxResolution(): void {
@@ -1408,7 +1408,7 @@ export class AndarBaharGame extends Component {
         }
 
         if (this.win_node) {
-            console.log("type = ", type);
+            // console.log("type = ", type);
             let pos = type == 1 ? v3(-207, 63.55, 0) : v3(207, 63.55, 0);
             this.win_node.setPosition(pos);
 
